@@ -36,6 +36,7 @@ dl <- reduce2(race_vars, list("a", "p", "h"), cat_poc, .init = dl)
 
 group_vars <- str_subset(colnames(dl$variables), ".*t_.*")
 
+main_df <- NULL
 for(var in group_vars) {
   med_reg <- psrc_pums_median(dl, 
                            stat_var = "HINCP",
@@ -58,11 +59,18 @@ for(var in group_vars) {
   med_cnty <- med_cnty |> 
     filter(!(.data[[var]] %in% cats))
   
-  # assemble and rename var to generic colname and add new column to identify type of raw table
+  rt <- str_extract(var, "^.*(?=_)")
+  rt_name <- switch(rt, "acat" = "ARACE", "pcat" = "PRACE", "hcat" = "HRACE")
+  
+  # assemble and rename var to generic colnames and add new column to identify type of raw table
   rs <- bind_rows(med_reg, med_cnty) |> 
-    arrange(DATA_YEAR, COUNTY) |> 
-    mutate(table_type = "detail")
-    rename(total_type = var)
+    mutate(table_type = "detail", race_type = rt_name) |> 
+    mutate(COUNTY = factor(COUNTY, levels = c("King", "Kitsap", "Pierce", "Snohomish", "Region"))) |> 
+    rename(total_type = var) |>     
+    arrange(DATA_YEAR, COUNTY)
+  
+  # bind to main table  
+  ifelse(is.null(main_df), main_df <- rs, main_df <- bind_rows(main_df, rs))  
 }
 
 
