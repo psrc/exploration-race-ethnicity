@@ -89,4 +89,5 @@ all_dfs <- map2(list(pums_raw_hh_mrdetail,
 
 all_dfs <- set_names(all_dfs, table_types)
 
-
+# saveRDS(all_dfs, "T:\\60day-TEMP\\christy\\explore-race\\total-median-all-dfs.rds")
+# tot_med_all_dfs <- readRDS("T:\\60day-TEMP\\christy\\explore-race\\total-median-all-dfs.rds")
