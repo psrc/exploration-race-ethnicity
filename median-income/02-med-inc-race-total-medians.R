@@ -2,7 +2,6 @@
 # table detail types: Detail, Dichot, and Single 
 
 library(tidyverse)
-library(psrccensus)
 library(magrittr)
 
 # retrieve data
@@ -88,6 +87,9 @@ all_dfs <- map2(list(pums_raw_hh_mrdetail,
                 ~create_total_medians(.x) |> mutate(table_type = .y)) 
 
 all_dfs <- reduce(all_dfs, bind_rows)
+
+all_dfs <- all_dfs |> 
+  mutate(race = paste("Total", race))
 
 saveRDS(all_dfs, "median-income/data/total-median-df.rds")
 

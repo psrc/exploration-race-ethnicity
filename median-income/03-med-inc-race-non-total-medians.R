@@ -1,10 +1,10 @@
 # This script will produce a rds that compiles non-total median income by geography, race, and table detail types
 
 library(tidyverse)
-library(psrccensus)
 library(magrittr)
 
 # retrieve data
+unloadNamespace("psrccensus")
 source("median-income/01-med-inc-race-get-data.R")
 
 race_vars <- c("ARACE", "PRACE", "HRACE")

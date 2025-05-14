@@ -4,6 +4,7 @@
 # within the R directory (library_loc) to save the corresponding data: "psrccensus_mrdetail" and "psrccensus_mrdichot"
 
 library(remotes)
+library(purrr)
 
 library_loc <- "C:/Users/CLam/AppData/Local/R/win-library/4.4"
 
