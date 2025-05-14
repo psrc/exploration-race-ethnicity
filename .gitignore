@@ -4,3 +4,4 @@
 .Ruserdata
 median-income/*.xlsx
 median-income/data/*.rds
+median-income/data/*.xlsx
