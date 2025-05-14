@@ -1,4 +1,4 @@
-# This script compiles median income by geography, race, and table detail types
+# This script will produce a rds that compiles non-total median income by geography, race, and table detail types
 
 library(tidyverse)
 library(psrccensus)
@@ -44,3 +44,7 @@ for(ttype in table_types) {
     ifelse(is.null(main_df), main_df <- rs, main_df <- bind_rows(main_df, rs))
   }
 }
+
+saveRDS(main_df, "median-income/data/non-total-medians-df.rds")
+
+

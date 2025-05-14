@@ -1,4 +1,4 @@
-# This script will calculate the 'Total Median of Median values' for Multirace, Multiple Races, and People of Color by the
+# This script will produce a rds that calculates the 'Total Median of Median values' for Multirace, Multiple Races, and People of Color by the
 # table detail types: Detail, Dichot, and Single 
 
 library(tidyverse)
@@ -69,7 +69,7 @@ create_total_medians <- function(raw_pums) {
     rs <- bind_rows(med_reg, med_cnty) |>
       mutate(race_type = rt_name) |>
       mutate(COUNTY = factor(COUNTY, levels = c("King", "Kitsap", "Pierce", "Snohomish", "Region"))) |>
-      rename(total_type = var) |>
+      rename(race = var) |>
       arrange(COUNTY)
     
     # bind to main table
@@ -85,9 +85,9 @@ all_dfs <- map2(list(pums_raw_hh_mrdetail,
                     pums_raw_hh_mrdichot,
                     pums_raw_hh_mrsingle), 
                 table_types,
-                ~create_total_medians(.x) |> mutate(table_type = .y))
+                ~create_total_medians(.x) |> mutate(table_type = .y)) 
 
-all_dfs <- set_names(all_dfs, table_types)
+all_dfs <- reduce(all_dfs, bind_rows)
 
-# saveRDS(all_dfs, "T:\\60day-TEMP\\christy\\explore-race\\total-median-all-dfs.rds")
-# tot_med_all_dfs <- readRDS("T:\\60day-TEMP\\christy\\explore-race\\total-median-all-dfs.rds")
+saveRDS(all_dfs, "median-income/data/total-median-df.rds")
+

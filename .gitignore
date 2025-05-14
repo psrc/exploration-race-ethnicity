@@ -3,3 +3,4 @@
 .RData
 .Ruserdata
 median-income/*.xlsx
+median-income/data/*.rds
