@@ -51,4 +51,4 @@ for (ttype in table_types) {
   }
 }
 
-write.xlsx(all_dfs, "median-income/data/output.xlsx")
+write.xlsx(all_dfs, "median-income/data/median-income-by-re.xlsx")
