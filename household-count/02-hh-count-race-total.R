@@ -5,7 +5,7 @@ library(tidyverse)
 library(magrittr)
 
 # retrieve data
-source("median-income/01-med-inc-race-get-data.R")
+source("household-count/01-hh-count-race-get-data.R")
 
 race_vars <- c("ARACE", "PRACE", "HRACE")
 table_types <- c("detail", "dichot", "single")
@@ -27,7 +27,7 @@ cat_poc <- function(df, race_col, x) {
   df |> mutate({{newcol}} := ifelse(!c(.data[[race_col]] %in% c("Total", "White alone", NA)), "People of Color", "Not People of Color"))
 }
 
-create_total_medians <- function(raw_pums) {
+create_total_counts <- function(raw_pums) {
   
   # add labeling columns
   dl <- reduce2(race_vars, list("a", "p", "h"), cat_multirace, .init = raw_pums)
@@ -39,25 +39,23 @@ create_total_medians <- function(raw_pums) {
   # calc medians
   main_df <- NULL
   for(var in group_vars) {
-    med_reg <- psrc_pums_median(dl,
-                                stat_var = "HINCP",
-                                group_vars = var,
-                                incl_na = FALSE,
-                                rr = TRUE)
+    count_reg <- psrc_pums_count(dl, 
+                                 group_vars=group_vars, 
+                                 incl_na=FALSE, 
+                                 rr=TRUE)
     
     # extract record that's not Total and ^Not
-    cats <- str_subset(unique(med_reg[[var]]), "^Total|^Not.*")
-    med_reg <- med_reg |>
+    cats <- str_subset(unique(count_reg[[var]]), "^Total|^Not.*")
+    count_reg <- count_reg |>
       filter(!(.data[[var]] %in% cats))
     
-    med_cnty <- psrc_pums_median(dl,
-                                 stat_var = "HINCP",
-                                 group_vars = c("COUNTY", var),
-                                 incl_na = FALSE,
-                                 rr = TRUE) |>
+    count_cnty <- psrc_pums_count(dl, 
+                                  group_vars=c("COUNTY", group_vars), 
+                                  incl_na=FALSE, 
+                                  rr=TRUE) |>
       filter(COUNTY != "Region")
     
-    med_cnty <- med_cnty |>
+    count_cnty <- count_cnty |>
       filter(!(.data[[var]] %in% cats))
     
     # extract identifiers (race column type)
@@ -65,9 +63,9 @@ create_total_medians <- function(raw_pums) {
     rt_name <- switch(rt, "acat" = "ARACE", "pcat" = "PRACE", "hcat" = "HRACE")
     
     # assemble and rename var to generic colnames and add new column to identify type of raw table
-    rs <- bind_rows(med_reg, med_cnty) |>
+    rs <- bind_rows(count_reg, count_cnty) |>
       mutate(race_type = rt_name) |>
-      mutate(COUNTY = factor(COUNTY, levels = c("King", "Kitsap", "Pierce", "Snohomish", "Region"))) |>
+      mutate(COUNTY = factor(COUNTY, levels = c("Region", "King", "Kitsap", "Pierce", "Snohomish"))) |>
       rename(race = var) |>
       arrange(COUNTY)
     
@@ -78,17 +76,18 @@ create_total_medians <- function(raw_pums) {
   return(main_df)
 }
 
-# create total medians ----
+# create total counts ----
 
 all_dfs <- map2(list(pums_raw_hh_mrdetail,
-                    pums_raw_hh_mrdichot,
-                    pums_raw_hh_mrsingle), 
+                     pums_raw_hh_mrdichot,
+                     pums_raw_hh_mrsingle), 
                 table_types,
-                ~create_total_medians(.x) |> mutate(table_type = .y)) 
+                ~create_total_counts(.x) |> mutate(table_type = .y)) 
 
 all_dfs <- reduce(all_dfs, bind_rows)
 
 all_dfs <- all_dfs |> 
   mutate(race = paste("Total", race))
 
-saveRDS(all_dfs, "median-income/data/total-median-df.rds")
+saveRDS(all_dfs, "household-count/data/total-counts-df.rds")
+# readRDS("household-count/data/total-counts-df.rds")

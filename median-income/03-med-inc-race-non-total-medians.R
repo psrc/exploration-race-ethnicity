@@ -6,6 +6,7 @@ library(magrittr)
 # retrieve data
 unloadNamespace("psrccensus")
 source("median-income/01-med-inc-race-get-data.R")
+# source("C:/Users/mrichards/Documents/GitHub/exploration-race-ethnicity/median-income/01-med-inc-race-get-data.R")
 
 race_vars <- c("ARACE", "PRACE", "HRACE")
 table_types <- c("detail", "dichot", "single")
@@ -46,5 +47,5 @@ for(ttype in table_types) {
 }
 
 saveRDS(main_df, "median-income/data/non-total-medians-df.rds")
-
+# saveRDS(all_dfs, "C:/Users/mrichards/Documents/GitHub/exploration-race-ethnicity/median-income/data/non-total-median-df.rds")
 
