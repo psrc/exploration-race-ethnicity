@@ -40,7 +40,7 @@ create_total_counts <- function(raw_pums) {
   main_df <- NULL
   for(var in group_vars) {
     count_reg <- psrc_pums_count(dl, 
-                                 group_vars=group_vars, 
+                                 group_vars=var, 
                                  incl_na=FALSE, 
                                  rr=TRUE)
     
@@ -50,7 +50,7 @@ create_total_counts <- function(raw_pums) {
       filter(!(.data[[var]] %in% cats))
     
     count_cnty <- psrc_pums_count(dl, 
-                                  group_vars=c("COUNTY", group_vars), 
+                                  group_vars=c("COUNTY", var), 
                                   incl_na=FALSE, 
                                   rr=TRUE) |>
       filter(COUNTY != "Region")

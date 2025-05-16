@@ -39,12 +39,12 @@ for (ttype in table_types) {
                   names_glue = "{race_type}_{.value}",
                   values_from = "count")
     
-    # df_share <- dfs_share |>
-    #   filter(TABLE_TYPE == ttype & COUNTY == g)|>
-    #   pivot_wider(id_cols = id_cols,
-    #               names_from = "race_type",
-    #               names_glue = "{race_type}_{.value}",
-    #               values_from = "share")
+    df_share <- dfs_count |>
+      filter(TABLE_TYPE == ttype & COUNTY == g)|>
+      pivot_wider(id_cols = id_cols,
+                  names_from = "race_type",
+                  names_glue = "{race_type}_{.value}",
+                  values_from = "share")
     
     df_rel <- dfs_rel |>
       filter(TABLE_TYPE == ttype & COUNTY == g)|>
@@ -54,7 +54,7 @@ for (ttype in table_types) {
                   values_from = "reliability")
     
     all_dfs[[paste(g, ttype, "count", sep = "_")]] <- df_count
-    # all_dfs[[paste(g, ttype, "share", sep = "_")]] <- df_share
+    all_dfs[[paste(g, ttype, "share", sep = "_")]] <- df_share
     all_dfs[[paste(g, ttype, "reliability", sep = "_")]] <- df_rel
   }
 }
