@@ -7,16 +7,16 @@ library(openxlsx)
 race_vars <- c("ARACE", "PRACE", "HRACE")
 table_types <- c("detail", "dichot", "single")
 
-# file_names <- c("non-total-counts-df-singleperson.rds", "total-counts-df-singleperson.rds")
-file_names <- c("non-total-counts-df-multiperson.rds","total-counts-df-multiperson.rds")
+file_names <- c("non-total-counts-df-singleperson.rds", "total-counts-df-singleperson.rds")
+# file_names <- c("non-total-counts-df-multiperson.rds","total-counts-df-multiperson.rds")
 
 # compile into one df ----
 
-df_bind <- map(file_names, ~readRDS(file.path("household-size/data/", .x))) |> 
-  bind_rows() |> 
+df_bind <- map(file_names, ~readRDS(file.path("median-income-hhsize/data/", .x))) |>
+  bind_rows() |>
   rename_with(toupper, c(race, table_type))
 
-dfs_count <- df_bind |> 
+dfs_med <- df_bind |> 
   select(!c(reliability, ends_with("moe")))
 
 dfs_rel <- df_bind |> 
@@ -33,19 +33,12 @@ for (ttype in table_types) {
   for(g in geographies) {
     id_cols <- c("DATA_YEAR", "COUNTY", "RACE", "TABLE_TYPE")
     
-    df_count <- dfs_count |>
+    df_med <- dfs_med |>
       filter(TABLE_TYPE == ttype & COUNTY == g) |>
       pivot_wider(id_cols = id_cols,
                   names_from = "race_type",
                   names_glue = "{race_type}_{.value}",
-                  values_from = "count")
-    
-    df_share <- dfs_count |>
-      filter(TABLE_TYPE == ttype & COUNTY == g)|>
-      pivot_wider(id_cols = id_cols,
-                  names_from = "race_type",
-                  names_glue = "{race_type}_{.value}",
-                  values_from = "share")
+                  values_from = "HINCP_median")
     
     df_rel <- dfs_rel |>
       filter(TABLE_TYPE == ttype & COUNTY == g)|>
@@ -54,11 +47,10 @@ for (ttype in table_types) {
                   names_glue = "{race_type}_{.value}",
                   values_from = "reliability")
     
-    all_dfs[[paste(g, ttype, "count", sep = "_")]] <- df_count
-    all_dfs[[paste(g, ttype, "share", sep = "_")]] <- df_share
+    all_dfs[[paste(g, ttype, "median", sep = "_")]] <- df_med
     all_dfs[[paste(g, ttype, "reliability", sep = "_")]] <- df_rel
   }
 }
 
-# write.xlsx(all_dfs, "household-size/data/household-size-by-re-singleperson.xlsx")
-write.xlsx(all_dfs, "household-size/data/household-size-by-re-multiperson.xlsx")
+write.xlsx(all_dfs, "median-income-hhsize/data/median-income-by-re-singleperson.xlsx")
+# write.xlsx(all_dfs, "median-income-hhsize/data/median-income-by-re-multiperson.xlsx")

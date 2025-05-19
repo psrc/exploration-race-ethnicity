@@ -20,18 +20,18 @@ for(ttype in table_types) {
   
   for(var in race_vars) {
     count_reg <- psrc_pums_count(dl, 
-                                 group_vars=c(var, "hhsz_binary"), 
+                                 group_vars=c("hhsz_binary", var), 
                                  incl_na=FALSE, 
                                  rr=TRUE) %>%
-      filter(hhsz_binary == "single-person") #%>%
-      # filter(hhsz_binary == "multi-person") #or multi-person
+      # filter(hhsz_binary == "single-person") #%>%
+      filter(hhsz_binary == "multi-person") #or multi-person
     
     count_cnty <- psrc_pums_count(dl, 
-                                  group_vars=c("COUNTY", var, "hhsz_binary"), 
+                                  group_vars=c("COUNTY","hhsz_binary",var), 
                                   incl_na=FALSE, 
                                   rr=TRUE) %>%
-      filter(hhsz_binary == "single-person") %>%
-      # filter(hhsz_binary == "multi-person") |> #or multi-person
+      # filter(hhsz_binary == "single-person") %>%
+      filter(hhsz_binary == "multi-person") |> #or multi-person
       filter(COUNTY != "Region")
     
     # rename var to generic colnames to assemble and add new column to identify type of raw table
@@ -47,7 +47,8 @@ for(ttype in table_types) {
   }
 }
 
-saveRDS(main_df, "household-size/data/non-total-counts-df-singleperson.rds")
-# saveRDS(main_df, "household-size/data/non-total-counts-df-multiperson.rds")
+# saveRDS(main_df, "household-size/data/non-total-counts-df-singleperson.rds")
+saveRDS(main_df, "household-size/data/non-total-counts-df-multiperson.rds")
+
 # readRDS("household-size/data/non-total-counts-df-singleperson.rds")
 
