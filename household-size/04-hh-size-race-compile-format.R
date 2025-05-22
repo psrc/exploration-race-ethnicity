@@ -7,8 +7,8 @@ library(openxlsx)
 race_vars <- c("ARACE", "PRACE", "HRACE")
 table_types <- c("detail", "dichot", "single")
 
-# file_names <- c("non-total-counts-df-singleperson.rds", "total-counts-df-singleperson.rds")
-file_names <- c("non-total-counts-df-multiperson.rds","total-counts-df-multiperson.rds")
+file_names <- c("non-total-counts-df-singleperson.rds", "total-counts-df-singleperson.rds")
+# file_names <- c("non-total-counts-df-multiperson.rds","total-counts-df-multiperson.rds")
 
 # compile into one df ----
 
@@ -33,32 +33,41 @@ for (ttype in table_types) {
   for(g in geographies) {
     id_cols <- c("DATA_YEAR", "COUNTY", "RACE", "TABLE_TYPE")
     
-    df_count <- dfs_count |>
-      filter(TABLE_TYPE == ttype & COUNTY == g) |>
-      pivot_wider(id_cols = id_cols,
-                  names_from = "race_type",
-                  names_glue = "{race_type}_{.value}",
-                  values_from = "count")
-    
-    df_share <- dfs_count |>
-      filter(TABLE_TYPE == ttype & COUNTY == g)|>
-      pivot_wider(id_cols = id_cols,
-                  names_from = "race_type",
-                  names_glue = "{race_type}_{.value}",
-                  values_from = "share")
-    
     df_rel <- dfs_rel |>
       filter(TABLE_TYPE == ttype & COUNTY == g)|>
       pivot_wider(id_cols = id_cols,
                   names_from = "race_type",
                   names_glue = "{race_type}_{.value}",
-                  values_from = "reliability")
+                  values_from = c("count", "share", "reliability"))
     
-    all_dfs[[paste(g, ttype, "count", sep = "_")]] <- df_count
-    all_dfs[[paste(g, ttype, "share", sep = "_")]] <- df_share
-    all_dfs[[paste(g, ttype, "reliability", sep = "_")]] <- df_rel
+    all_dfs[[paste(g, ttype, sep = "_")]] <- df_rel
+    
+    # df_count <- dfs_count |>
+    #   filter(TABLE_TYPE == ttype & COUNTY == g) |>
+    #   pivot_wider(id_cols = id_cols,
+    #               names_from = "race_type",
+    #               names_glue = "{race_type}_{.value}",
+    #               values_from = "count")
+    # 
+    # df_share <- dfs_count |>
+    #   filter(TABLE_TYPE == ttype & COUNTY == g)|>
+    #   pivot_wider(id_cols = id_cols,
+    #               names_from = "race_type",
+    #               names_glue = "{race_type}_{.value}",
+    #               values_from = "share")
+    # 
+    # df_rel <- dfs_rel |>
+    #   filter(TABLE_TYPE == ttype & COUNTY == g)|>
+    #   pivot_wider(id_cols = id_cols,
+    #               names_from = "race_type",
+    #               names_glue = "{race_type}_{.value}",
+    #               values_from = "reliability")
+    # 
+    # all_dfs[[paste(g, ttype, "count", sep = "_")]] <- df_count
+    # all_dfs[[paste(g, ttype, "share", sep = "_")]] <- df_share
+    # all_dfs[[paste(g, ttype, "reliability", sep = "_")]] <- df_rel
   }
 }
 
-# write.xlsx(all_dfs, "household-size/data/household-size-by-re-singleperson.xlsx")
-write.xlsx(all_dfs, "household-size/data/household-size-by-re-multiperson.xlsx")
+write.xlsx(all_dfs, "household-size/data/household-size-by-re-singleperson.xlsx")
+# write.xlsx(all_dfs, "household-size/data/household-size-by-re-multiperson.xlsx")
