@@ -44,8 +44,8 @@ create_total_counts <- function(raw_pums) {
                                 incl_na = FALSE,
                                 rr = TRUE) |>
       filter(OWN_RENT == "Owned") |>
-      filter(hhsz_binary == "single-person") #|>
-    # filter(hhsz_binary == "multi-person")
+    #  filter(hhsz_binary == "single-person") |>
+      filter(hhsz_binary == "multi-person")
     
     # extract record that's not Total and ^Not
     cats <- str_subset(unique(count_reg[[var]]), "^Total|^Not.*")
@@ -57,8 +57,8 @@ create_total_counts <- function(raw_pums) {
                                  incl_na = FALSE,
                                  rr = TRUE) |>
       filter(COUNTY!="Region", OWN_RENT == "Owned") |>
-      filter(hhsz_binary == "single-person") #|>
-    # filter(hhsz_binary == "multi-person")
+    # filter(hhsz_binary == "single-person") |>
+      filter(hhsz_binary == "multi-person")
     
     count_cnty <- count_cnty |>
       filter(!(.data[[var]] %in% cats))
@@ -94,5 +94,5 @@ all_dfs <- reduce(all_dfs, bind_rows)
 all_dfs <- all_dfs |> 
   mutate(race = paste("Total", race))
 
-saveRDS(all_dfs, "ownership-rate-hhsize/data/total-count-df-singleperson.rds")
-#saveRDS(all_dfs, "ownership-rate-hhsize/data/total-count-df-multiperson.rds")
+#saveRDS(all_dfs, "ownership-rate-hhsize/data/total-count-df-singleperson.rds")
+saveRDS(all_dfs, "ownership-rate-hhsize/data/total-count-df-multiperson.rds")
