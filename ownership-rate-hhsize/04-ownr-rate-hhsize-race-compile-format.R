@@ -7,11 +7,12 @@ library(openxlsx)
 race_vars <- c("ARACE", "PRACE", "HRACE")
 table_types <- c("detail", "dichot", "single")
 
-file_names <- c("non-total-count-df.rds", "total-count-df.rds")
+file_names <- c("non-total-count-df-singleperson.rds", "total-count-df-singleperson.rds")
+#file_names <- c("non-total-count-df-multiperson.rds", "total-count-df-multiperson.rds")
 
 # compile into one df ----
 
-df_bind <- map(file_names, ~readRDS(file.path("ownership-rate/data/", .x))) |>
+df_bind <- map(file_names, ~readRDS(file.path("ownership-rate-hhsize/data/", .x))) |>
   bind_rows() |>
   rename_with(toupper, c(race, table_type))
 
@@ -43,4 +44,6 @@ for (ttype in table_types) {
   }
 }
 
-write.xlsx(all_dfs, "ownership-rate/data/ownership_rate-by-re.xlsx")
+write.xlsx(all_dfs, "ownership-rate-hhsize/data/ownership_rate-by-re-singlepersonhh.xlsx")
+#write.xlsx(all_dfs, "ownership-rate-hhsize/data/ownership_rate-by-re-multipersonhh.xlsx")
+
