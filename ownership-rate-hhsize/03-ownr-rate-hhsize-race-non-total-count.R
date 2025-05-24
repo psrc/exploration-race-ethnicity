@@ -20,7 +20,7 @@ for(ttype in table_types) {
   
   for(var in race_vars) {
     count_reg <- psrc_pums_count(dl,
-                                 group_vars = c(var, "OWN_RENT","hhsz_binary"),
+                                 group_vars = c(var,"hhsz_binary","OWN_RENT"),
                                 incl_na = FALSE,
                                 rr = TRUE) |>
       filter(OWN_RENT == "Owned") |>
@@ -28,7 +28,7 @@ for(ttype in table_types) {
     # filter(hhsz_binary == "multi-person")
     
     count_cnty <- psrc_pums_count(dl,
-                                 group_vars = c("COUNTY", var, "OWN_RENT","hhsz_binary"),
+                                 group_vars = c("COUNTY", var,"hhsz_binary","OWN_RENT"),
                                  incl_na = FALSE,
                                  rr = TRUE) |>
       filter(COUNTY!="Region", OWN_RENT == "Owned") |>
