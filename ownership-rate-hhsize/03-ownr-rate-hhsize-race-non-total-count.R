@@ -24,16 +24,16 @@ for(ttype in table_types) {
                                 incl_na = FALSE,
                                 rr = TRUE) |>
       filter(OWN_RENT == "Owned") |>
-      filter(hhsz_binary == "single-person") #|>
-    # filter(hhsz_binary == "multi-person")
+     # filter(hhsz_binary == "single-person")
+     filter(hhsz_binary == "multi-person")
     
     count_cnty <- psrc_pums_count(dl,
                                  group_vars = c("COUNTY", var,"hhsz_binary","OWN_RENT"),
                                  incl_na = FALSE,
                                  rr = TRUE) |>
       filter(COUNTY!="Region", OWN_RENT == "Owned") |>
-      filter(hhsz_binary == "single-person") #|>
-    # filter(hhsz_binary == "multi-person")
+     # filter(hhsz_binary == "single-person")
+      filter(hhsz_binary == "multi-person")
     
     # rename var to generic colnames to assemble and add new column to identify type of raw table
     rs <- bind_rows(count_reg, count_cnty) |>
@@ -48,5 +48,5 @@ for(ttype in table_types) {
   }
 }
 
-saveRDS(main_df, "ownership-rate-hhsize/data/non-total-count-df-singleperson.rds")
-#saveRDS(main_df, "ownership-rate-hhsize/data/non-total-count-df-multiperson.rds")
+#saveRDS(main_df, "ownership-rate-hhsize/data/non-total-count-df-singleperson.rds")
+saveRDS(main_df, "ownership-rate-hhsize/data/non-total-count-df-multiperson.rds")

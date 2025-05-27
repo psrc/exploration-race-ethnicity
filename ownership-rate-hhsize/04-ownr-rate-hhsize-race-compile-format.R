@@ -7,8 +7,8 @@ library(openxlsx)
 race_vars <- c("ARACE", "PRACE", "HRACE")
 table_types <- c("detail", "dichot", "single")
 
-file_names <- c("non-total-count-df-singleperson.rds", "total-count-df-singleperson.rds")
-#file_names <- c("non-total-count-df-multiperson.rds", "total-count-df-multiperson.rds")
+#file_names <- c("non-total-count-df-singleperson.rds", "total-count-df-singleperson.rds")
+file_names <- c("non-total-count-df-multiperson.rds", "total-count-df-multiperson.rds")
 
 # compile into one df ----
 
@@ -41,6 +41,6 @@ for (ttype in table_types) {
     all_dfs[[paste(ttype, sep = "_")]] <- df_rel
 }
 
-write.xlsx(all_dfs, "ownership-rate-hhsize/data/ownership_rate-by-re-singlepersonhh.xlsx")
-#write.xlsx(all_dfs, "ownership-rate-hhsize/data/ownership_rate-by-re-multipersonhh.xlsx")
+#write.xlsx(all_dfs, "ownership-rate-hhsize/data/ownership_rate-by-re-singlepersonhh.xlsx")
+write.xlsx(all_dfs, "ownership-rate-hhsize/data/ownership_rate-by-re-multipersonhh.xlsx")
 
