@@ -40,12 +40,12 @@ create_total_counts <- function(raw_pums) {
   main_df <- NULL
   for(var in group_vars) {
     count_reg <- psrc_pums_count(dl,
-                                group_vars = c(var, "OWN_RENT","hhsz_binary"),
+                                group_vars = c(var,"hhsz_binary","OWN_RENT"),
                                 incl_na = FALSE,
                                 rr = TRUE) |>
       filter(OWN_RENT == "Owned") |>
-    #  filter(hhsz_binary == "single-person") |>
-      filter(hhsz_binary == "multi-person")
+     # filter(hhsz_binary == "single-person")
+       filter(hhsz_binary == "multi-person")
     
     # extract record that's not Total and ^Not
     cats <- str_subset(unique(count_reg[[var]]), "^Total|^Not.*")
@@ -53,11 +53,11 @@ create_total_counts <- function(raw_pums) {
       filter(!(.data[[var]] %in% cats))
     
     count_cnty <- psrc_pums_count(dl,
-                                 group_vars = c("COUNTY", var, "OWN_RENT","hhsz_binary"),
+                                 group_vars = c("COUNTY", var,"hhsz_binary","OWN_RENT"),
                                  incl_na = FALSE,
                                  rr = TRUE) |>
       filter(COUNTY!="Region", OWN_RENT == "Owned") |>
-    # filter(hhsz_binary == "single-person") |>
+     # filter(hhsz_binary == "single-person")
       filter(hhsz_binary == "multi-person")
     
     count_cnty <- count_cnty |>

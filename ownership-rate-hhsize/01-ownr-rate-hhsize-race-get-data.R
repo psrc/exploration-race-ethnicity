@@ -23,12 +23,12 @@ pums_raw_hh_mrsingle <- get_psrc_pums(5, dyear , "h",
                                       dir = dir) # pull network archived copy because Census Bureau ftp site not allowing downloads
 
 # modify for hhsize ----
-pums_raw_hh_mrdetail <- pums_raw_hh_mrdetail %>%
+pums_raw_hh_mrdetail <- pums_raw_hh_mrdetail |>
   mutate(hhsz_binary = case_when(NP==1~"single-person",
                                  NP>1~"multi-person"))
-pums_raw_hh_mrdichot <- pums_raw_hh_mrdichot %>%
+pums_raw_hh_mrdichot <- pums_raw_hh_mrdichot |>
   mutate(hhsz_binary = case_when(NP==1~"single-person",
                                  NP>1~"multi-person"))
-pums_raw_hh_mrsingle <- pums_raw_hh_mrsingle %>%
+pums_raw_hh_mrsingle <- pums_raw_hh_mrsingle |>
   mutate(hhsz_binary = case_when(NP==1~"single-person",
                                  NP>1~"multi-person"))
