@@ -67,7 +67,7 @@ create_total_medians <- function(raw_pums) {
     # assemble and rename var to generic colnames and add new column to identify type of raw table
     rs <- bind_rows(med_reg, med_cnty) |>
       mutate(race_type = rt_name) |>
-      mutate(COUNTY = factor(COUNTY, levels = c("King", "Kitsap", "Pierce", "Snohomish", "Region"))) |>
+      mutate(COUNTY = factor(COUNTY, levels = c("Region", "King", "Kitsap", "Pierce", "Snohomish"))) |>
       rename(race = var) |>
       arrange(COUNTY)
     

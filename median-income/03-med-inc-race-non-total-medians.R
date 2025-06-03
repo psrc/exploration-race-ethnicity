@@ -37,7 +37,7 @@ for(ttype in table_types) {
     rs <- bind_rows(med_reg, med_cnty) |>
       mutate(race_type = var,
              table_type = ttype) |>
-      mutate(COUNTY = factor(COUNTY, levels = c("King", "Kitsap", "Pierce", "Snohomish", "Region"))) |>
+      mutate(COUNTY = factor(COUNTY, levels = c("Region", "King", "Kitsap", "Pierce", "Snohomish"))) |>
       rename(race = var) |> 
       arrange(COUNTY)
     

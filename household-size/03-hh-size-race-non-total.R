@@ -51,4 +51,3 @@ saveRDS(main_df, "household-size/data/non-total-counts-df-singleperson.rds")
 # saveRDS(main_df, "household-size/data/non-total-counts-df-multiperson.rds")
 
 # readRDS("household-size/data/non-total-counts-df-singleperson.rds")
-

@@ -43,8 +43,8 @@ create_total_counts <- function(raw_pums) {
                                  group_vars=c(var,"hhsz_binary"), 
                                  incl_na=FALSE, 
                                  rr=TRUE) %>%
-      filter(hhsz_binary == "single-person") #%>%
-      # filter(hhsz_binary == "multi-person") #or multi-person
+      # filter(hhsz_binary == "single-person") #%>%
+      filter(hhsz_binary == "multi-person") #or multi-person
     
     # extract record that's not Total and ^Not
     cats <- str_subset(unique(count_reg[[var]]), "^Total|^Not.*")
@@ -55,8 +55,8 @@ create_total_counts <- function(raw_pums) {
                                   group_vars=c("COUNTY",var,"hhsz_binary"), 
                                   incl_na=FALSE, 
                                   rr=TRUE) %>%
-      filter(hhsz_binary == "single-person") %>%
-      # filter(hhsz_binary == "multi-person") |> #or multi-person
+      # filter(hhsz_binary == "single-person") %>%
+      filter(hhsz_binary == "multi-person") |> #or multi-person
       filter(COUNTY != "Region")
     
     count_cnty <- count_cnty |>
@@ -93,7 +93,7 @@ all_dfs <- reduce(all_dfs, bind_rows)
 all_dfs <- all_dfs |> 
   mutate(race = paste("Total", race))
 
-saveRDS(all_dfs, "household-size/data/total-counts-df-singleperson.rds")
-# saveRDS(all_dfs, "household-size/data/total-counts-df-multiperson.rds")
+# saveRDS(all_dfs, "household-size/data/total-counts-df-singleperson.rds")
+saveRDS(all_dfs, "household-size/data/total-counts-df-multiperson.rds")
 
 # readRDS("household-size/data/total-counts-df-singleperson.rds")

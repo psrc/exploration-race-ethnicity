@@ -49,6 +49,7 @@ create_total_medians <- function(raw_pums) {
     
     # extract record that's not Total and ^Not
     cats <- str_subset(unique(med_reg[[var]]), "^Total|^Not.*")
+
     med_reg <- med_reg |>
       filter(!(.data[[var]] %in% cats))
     
@@ -98,4 +99,4 @@ all_dfs <- all_dfs |>
 saveRDS(all_dfs, "median-income-hhsize/data/total-counts-df-singleperson.rds")
 # saveRDS(all_dfs, "median-income-hhsize/data/total-counts-df-multiperson.rds")
 
-# readRDS("median-income-hhsize/data/total-counts-df-singleperson.rds")
+# readRDS("median-income-hhsize/data/total-counts-df-multiperson.rds")

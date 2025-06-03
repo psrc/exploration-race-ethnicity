@@ -44,4 +44,3 @@ for(ttype in table_types) {
 }
 
 saveRDS(main_df, "household-count/data/non-total-counts-df.rds")
-

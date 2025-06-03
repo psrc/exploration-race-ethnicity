@@ -50,14 +50,26 @@ for (ttype in table_types) {
     # all_dfs[[paste(g, ttype, "median", sep = "_")]] <- df_med
     # all_dfs[[paste(g, ttype, "reliability", sep = "_")]] <- df_rel
     
+    # df_rel <- df_bind |>
+    #   filter(TABLE_TYPE == ttype & COUNTY == g)|>
+    #   pivot_wider(id_cols = id_cols,
+    #               names_from = "race_type",
+    #               names_glue = "{race_type}_{.value}",
+    #               values_from = c("HINCP_median", "HINCP_median_moe", "reliability"))
+    # 
+    # all_dfs[[paste(g, ttype, sep = "_")]] <- df_rel
+    # 
+    # id_cols <- c("DATA_YEAR", "COUNTY", "RACE", "TABLE_TYPE")
+    
     df_rel <- df_bind |>
-      filter(TABLE_TYPE == ttype & COUNTY == g)|>
+      filter(TABLE_TYPE == ttype)|>
       pivot_wider(id_cols = id_cols,
                   names_from = "race_type",
                   names_glue = "{race_type}_{.value}",
-                  values_from = c("HINCP_median", "HINCP_median_moe", "reliability"))
+                  values_from = c("HINCP_median", "HINCP_median_moe", "reliability"))|>
+      arrange(COUNTY)
     
-    all_dfs[[paste(g, ttype, sep = "_")]] <- df_rel
+    all_dfs[[paste(ttype, sep = "_")]] <- df_rel
   }
 }
 
