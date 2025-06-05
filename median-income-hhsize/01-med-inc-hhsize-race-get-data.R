@@ -2,8 +2,8 @@ library(tidyverse)
 
 race_vars <- c("ARACE", "PRACE", "HRACE")
 dyear <- 2023
-# library_loc <- "C:/Users/CLam/AppData/Local/R/win-library/4.4"
-library_loc <- "C:/Users/mrichards/AppData/Local/R/win-library/4.4"
+library_loc <- "C:/Users/CLam/AppData/Local/R/win-library/4.4"
+# library_loc <- "C:/Users/mrichards/AppData/Local/R/win-library/4.4"
 dir <- "J:/Projects/Census/AmericanCommunitySurvey/Data/PUMS/pums_rds"
 
 # Retrieve data ----
