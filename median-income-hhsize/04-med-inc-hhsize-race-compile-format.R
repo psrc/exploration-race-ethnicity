@@ -32,7 +32,7 @@ all_dfs <- list()
 
 for (ttype in table_types) {
   for(g in geographies) {
-    for(s in hhsizes)
+    for(s in hhsizes) {
     id_cols <- c("DATA_YEAR", "COUNTY", "RACE", "TABLE_TYPE", "HHSIZE")
     
     df_med <- dfs_med |>
@@ -52,6 +52,7 @@ for (ttype in table_types) {
     s_abbr <- switch(s, "single-person" = "sp", "multi-person" = "mp")
     all_dfs[[paste(g, ttype, s_abbr, "median", sep = "_")]] <- df_med
     all_dfs[[paste(g, ttype, s_abbr, "reliability", sep = "_")]] <- df_rel
+    }
   }
 }
 
