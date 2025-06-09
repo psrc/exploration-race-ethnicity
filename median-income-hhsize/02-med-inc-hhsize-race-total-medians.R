@@ -43,13 +43,11 @@ create_total_medians <- function(raw_pums) {
                                 stat_var = "HINCP",
                                 group_vars = c(var,"hhsz_binary"),
                                 incl_na = FALSE,
-                                rr = TRUE) %>%
-      filter(hhsz_binary == "single-person") #%>%
-    # filter(hhsz_binary == "multi-person") #or multi-person
+                                rr = TRUE)
     
     # extract record that's not Total and ^Not
     cats <- str_subset(unique(med_reg[[var]]), "^Total|^Not.*")
-
+    
     med_reg <- med_reg |>
       filter(!(.data[[var]] %in% cats))
     
@@ -57,9 +55,7 @@ create_total_medians <- function(raw_pums) {
                                  stat_var = "HINCP",
                                  group_vars = c("COUNTY",var,"hhsz_binary"),
                                  incl_na = FALSE,
-                                 rr = TRUE) %>%
-      filter(hhsz_binary == "single-person") %>%
-      # filter(hhsz_binary == "multi-person") |> #or multi-person
+                                 rr = TRUE) |> 
       filter(COUNTY != "Region")
     
     med_cnty <- med_cnty |>
@@ -96,7 +92,8 @@ all_dfs <- reduce(all_dfs, bind_rows)
 all_dfs <- all_dfs |> 
   mutate(race = paste("Total", race))
 
-saveRDS(all_dfs, "median-income-hhsize/data/total-counts-df-singleperson.rds")
+saveRDS(all_dfs, "median-income-hhsize/data/total-counts-df.rds")
+# saveRDS(all_dfs, "median-income-hhsize/data/total-counts-df-singleperson.rds")
 # saveRDS(all_dfs, "median-income-hhsize/data/total-counts-df-multiperson.rds")
 
 # readRDS("median-income-hhsize/data/total-counts-df-multiperson.rds")
