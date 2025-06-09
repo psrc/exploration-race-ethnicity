@@ -8,13 +8,15 @@ race_vars <- c("ARACE", "PRACE", "HRACE")
 table_types <- c("detail", "dichot", "single")
 
 # file_names <- c("non-total-counts-df-singleperson.rds", "total-counts-df-singleperson.rds")
-file_names <- c("non-total-counts-df-multiperson.rds","total-counts-df-multiperson.rds")
+# file_names <- c("non-total-counts-df-multiperson.rds","total-counts-df-multiperson.rds")
+file_names <- c("non-total-counts-df.rds","total-counts-df.rds")
 
 # compile into one df ----
 
 df_bind <- map(file_names, ~readRDS(file.path("household-size/data/", .x))) |> 
   bind_rows() |> 
-  rename_with(toupper, c(race, table_type))
+  rename_with(toupper, c(race, table_type)) |>
+  rename("HHSIZE" = "hhsz_binary")
 
 dfs_count <- df_bind |> 
   select(!c(reliability, ends_with("moe")))
@@ -25,23 +27,26 @@ dfs_rel <- df_bind |>
 # separate into different dataframes ----
 
 geographies <- unique(df_bind$COUNTY)
+hhsizes <- c("single-person", "multi-person")
 all_dfs <- list()
 
 # Loop through the list of dataframes and add them as sheets ----
 
 for (ttype in table_types) {
   for(g in geographies) {
+    for(s in hhsizes) {
     id_cols <- c("DATA_YEAR", "COUNTY", "RACE", "TABLE_TYPE")
     
-    df_rel <- dfs_rel |>
-      filter(TABLE_TYPE == ttype)|>
+    df_rel <- df_bind |>
+      filter(TABLE_TYPE == ttype & HHSIZE == s)|>
       pivot_wider(id_cols = id_cols,
                   names_from = "race_type",
                   names_glue = "{race_type}_{.value}",
                   values_from = c("count", "share", "reliability"))|>
       arrange(COUNTY)
     
-    all_dfs[[paste(ttype, sep = "_")]] <- df_rel
+    s_abbr <- switch(s, "single-person" = "sp", "multi-person" = "mp")
+    all_dfs[[paste(ttype, s_abbr, sep = "_")]] <- df_rel
     
     # df_rel <- dfs_rel |>
     #   filter(TABLE_TYPE == ttype & COUNTY == g)|>
@@ -76,8 +81,9 @@ for (ttype in table_types) {
     # all_dfs[[paste(g, ttype, "count", sep = "_")]] <- df_count
     # all_dfs[[paste(g, ttype, "share", sep = "_")]] <- df_share
     # all_dfs[[paste(g, ttype, "reliability", sep = "_")]] <- df_rel
-  }
+  }}
 }
 
 # write.xlsx(all_dfs, "household-size/data/household-size-by-re-singleperson.xlsx")
-write.xlsx(all_dfs, "household-size/data/household-size-by-re-multiperson.xlsx")
+# write.xlsx(all_dfs, "household-size/data/household-size-by-re-multiperson.xlsx")
+write.xlsx(all_dfs, "household-size/data/household-size-by-re.xlsx")
