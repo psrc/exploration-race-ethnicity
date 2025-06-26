@@ -76,3 +76,29 @@ saveRDS(main_df, "median-income-hhsize/data/non-total-counts-df.rds")
 # saveRDS(main_df, "median-income-hhsize/data/non-total-counts-df-multiperson.rds")
 
 # readRDS("median-income-hhsize/data/non-total-counts-df-singleperson.rds")
+
+
+# testing total row ----------
+# test_reg_arace <- psrc_pums_median(pums_raw_hh_mrdetail,
+#                                    stat_var = "HINCP",
+#                                    group_vars = c("hhsz_binary", "ARACE"),
+#                                    incl_na = FALSE,
+#                                    rr = TRUE) %>% 
+#   filter(hhsz_binary=="multi-person") 
+# test_reg_hrace <- psrc_pums_median(pums_raw_hh_mrdetail,
+#                                    stat_var = "HINCP",
+#                                    group_vars = c("hhsz_binary", "HRACE"),
+#                                    incl_na = FALSE,
+#                                    rr = TRUE) %>% 
+#   filter(hhsz_binary=="multi-person")
+# test_reg_prace <- psrc_pums_median(pums_raw_hh_mrdetail,
+#                                    stat_var = "HINCP",
+#                                    group_vars = c("hhsz_binary", "PRACE"),
+#                                    incl_na = FALSE,
+#                                    rr = TRUE) %>% 
+#   filter(hhsz_binary=="multi-person") 
+# 
+# test_dfs <- list(test_reg_arace,test_reg_hrace,test_reg_prace)
+
+# write.xlsx(test_dfs, 
+#            "median-income-hhsize/data/median-income-by-re-multi-test.xlsx")
