@@ -22,14 +22,18 @@ dfs_rel <- df_bind |>
   select(!starts_with("H"))
 
 # separate into different dataframes ----
+
+geographies <- unique(df_bind$COUNTY)
+hhsizes <- c("single-person", "multi-person")
 all_dfs <- list()
 
 # Loop through the list of dataframes and add them as sheets ----
 
 for (ttype in table_types) {
+  for(g in geographies) {
     id_cols <- c("DATA_YEAR", "COUNTY", "RACE", "TABLE_TYPE")
     
-    df_rel <- dfs_rel |>
+    df_rel <- df_bind |>
       filter(TABLE_TYPE == ttype)|>
       pivot_wider(id_cols = id_cols,
                   names_from = "race_type",
@@ -39,6 +43,9 @@ for (ttype in table_types) {
 
     all_dfs[[paste(ttype, sep = "_")]] <- df_rel
 
+    
+  }   
 }
+
 
 write.xlsx(all_dfs, "ownership-rate/data/ownership_rate-by-re.xlsx")

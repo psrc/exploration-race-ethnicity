@@ -31,6 +31,19 @@ for(ttype in table_types) {
                                  rr = TRUE) |>
       filter(COUNTY!="Region", OWN_RENT == "Owned")
     
+    # extract from tables below where: XRace == "Total" 
+    count_reg2 <- psrc_pums_count(dl,
+                                 group_vars = c("OWN_RENT", var),
+                                 incl_na = FALSE,
+                                 rr = TRUE) |>
+      filter(OWN_RENT == "Owned")
+    
+    count_cnty2 <- psrc_pums_count(dl,
+                                  group_vars = c("COUNTY", "OWN_RENT", var),
+                                  incl_na = FALSE,
+                                  rr = TRUE) |>
+      filter(COUNTY!="Region", OWN_RENT == "Owned")
+    
     # rename var to generic colnames to assemble and add new column to identify type of raw table
     rs <- bind_rows(count_reg, count_cnty) |>
       mutate(race_type = var,
@@ -39,9 +52,22 @@ for(ttype in table_types) {
       rename(race = var) |> 
       arrange(COUNTY)
     
+    rs2 <- bind_rows(count_reg2, count_cnty2) |>
+      mutate(race_type = var,
+             table_type = ttype) |>
+      mutate(COUNTY = factor(COUNTY, levels = c("King", "Kitsap", "Pierce", "Snohomish", "Region"))) |>
+      rename(race = var) |> 
+      arrange(COUNTY) |> 
+      filter(race == 'Total')
+    
+    rs3 <- bind_rows(rs, rs2) |> 
+      arrange(COUNTY, race)
+    
     # bind to main table
-    ifelse(is.null(main_df), main_df <- rs, main_df <- bind_rows(main_df, rs))
+    ifelse(is.null(main_df), main_df <- rs3, main_df <- bind_rows(main_df, rs3))
   }
 }
 
 saveRDS(main_df, "ownership-rate/data/non-total-count-df.rds")
+
+readRDS("ownership-rate/data/non-total-count-df.rds")

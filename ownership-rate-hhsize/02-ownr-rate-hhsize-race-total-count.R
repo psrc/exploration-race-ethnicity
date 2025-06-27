@@ -36,7 +36,7 @@ create_total_counts <- function(raw_pums) {
   
   group_vars <- str_subset(colnames(dl$variables), ".*t_.*")
   
-  # calc medians
+  # calc ownership rate
   main_df <- NULL
   for(var in group_vars) {
     count_reg <- psrc_pums_count(dl,
@@ -44,11 +44,11 @@ create_total_counts <- function(raw_pums) {
                                 incl_na = FALSE,
                                 rr = TRUE) |>
       filter(OWN_RENT == "Owned") |>
-     # filter(hhsz_binary == "single-person")
-       filter(hhsz_binary == "multi-person")
+      filter(hhsz_binary == "single-person" | hhsz_binary == "multi-person") # need to filter because added 'Total' rows with added variable
     
     # extract record that's not Total and ^Not
     cats <- str_subset(unique(count_reg[[var]]), "^Total|^Not.*")
+    
     count_reg <- count_reg |>
       filter(!(.data[[var]] %in% cats))
     
@@ -57,8 +57,7 @@ create_total_counts <- function(raw_pums) {
                                  incl_na = FALSE,
                                  rr = TRUE) |>
       filter(COUNTY!="Region", OWN_RENT == "Owned") |>
-     # filter(hhsz_binary == "single-person")
-      filter(hhsz_binary == "multi-person")
+      filter(hhsz_binary == "single-person" | hhsz_binary == "multi-person") # need to filter because added 'Total' rows with added variable
     
     count_cnty <- count_cnty |>
       filter(!(.data[[var]] %in% cats))
@@ -94,5 +93,7 @@ all_dfs <- reduce(all_dfs, bind_rows)
 all_dfs <- all_dfs |> 
   mutate(race = paste("Total", race))
 
-#saveRDS(all_dfs, "ownership-rate-hhsize/data/total-count-df-singleperson.rds")
-saveRDS(all_dfs, "ownership-rate-hhsize/data/total-count-df-multiperson.rds")
+
+saveRDS(all_dfs, "ownership-rate-hhsize/data/total-counts-df.rds")
+
+#readRDS("ownership-rate-hhsize/data/total-counts-df.rds")

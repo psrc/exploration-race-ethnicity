@@ -36,7 +36,7 @@ create_total_counts <- function(raw_pums) {
   
   group_vars <- str_subset(colnames(dl$variables), ".*t_.*")
   
-  # calc medians
+  # calc ownership rate
   main_df <- NULL
   for(var in group_vars) {
     count_reg <- psrc_pums_count(dl,
@@ -91,3 +91,5 @@ all_dfs <- all_dfs |>
   mutate(race = paste("Total", race))
 
 saveRDS(all_dfs, "ownership-rate/data/total-count-df.rds")
+
+readRDS("ownership-rate/data/total-count-df.rds")
