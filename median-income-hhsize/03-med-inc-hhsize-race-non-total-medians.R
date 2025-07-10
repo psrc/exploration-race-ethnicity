@@ -72,8 +72,6 @@ for(ttype in table_types) {
 
 
 saveRDS(main_df, "median-income-hhsize/data/non-total-counts-df.rds")
-# saveRDS(main_df, "median-income-hhsize/data/non-total-counts-df-singleperson.rds")
-# saveRDS(main_df, "median-income-hhsize/data/non-total-counts-df-multiperson.rds")
 
 # readRDS("median-income-hhsize/data/non-total-counts-df-singleperson.rds")
 

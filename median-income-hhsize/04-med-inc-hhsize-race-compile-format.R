@@ -36,57 +36,19 @@ all_dfs <- list()
 for (ttype in table_types) {
   for(g in geographies) {
     for(s in hhsizes) {
-    id_cols <- c("DATA_YEAR", "COUNTY", "RACE", "TABLE_TYPE", "HHSIZE")
-    
-    # df_med <- dfs_med |>
-    #   filter(TABLE_TYPE == ttype & COUNTY == g) |>
-    #   pivot_wider(id_cols = id_cols,
-    #               names_from = "race_type",
-    #               names_glue = "{race_type}_{.value}",
-    #               values_from = "HINCP_median")
-    # 
-    # df_rel <- dfs_rel |>
-    #   filter(TABLE_TYPE == ttype & COUNTY == g)|>
-    #   pivot_wider(id_cols = id_cols,
-    #               names_from = "race_type",
-    #               names_glue = "{race_type}_{.value}",
-    #               values_from = "reliability")
-    # 
-    # all_dfs[[paste(g, ttype, "median", sep = "_")]] <- df_med
-    # all_dfs[[paste(g, ttype, "reliability", sep = "_")]] <- df_rel
-    
-    # df_rel <- df_bind |>
-    #   filter(TABLE_TYPE == ttype & COUNTY == g)|>
-    #   pivot_wider(id_cols = id_cols,
-    #               names_from = "race_type",
-    #               names_glue = "{race_type}_{.value}",
-    #               values_from = c("HINCP_median", "HINCP_median_moe", "reliability"))
-    # 
-    # all_dfs[[paste(g, ttype, sep = "_")]] <- df_rel
-    # 
-    # id_cols <- c("DATA_YEAR", "COUNTY", "RACE", "TABLE_TYPE")
-    
-    # df_rel <- df_bind |>
-    #   filter(TABLE_TYPE == ttype)|>
-    #   pivot_wider(id_cols = id_cols,
-    #               names_from = "race_type",
-    #               names_glue = "{race_type}_{.value}",
-    #               values_from = c("HINCP_median", "HINCP_median_moe", "reliability"))|>
-    #   arrange(COUNTY)
-    
-    df_rel <- df_bind |>
-      filter(TABLE_TYPE == ttype & HHSIZE == s)|>
-      pivot_wider(id_cols = id_cols,
-                  names_from = "race_type",
-                  names_glue = "{race_type}_{.value}",
-                  values_from = c("HINCP_median", "HINCP_median_moe", "reliability"))|>
-      arrange(COUNTY)
-    
-    s_abbr <- switch(s, "single-person" = "sp", "multi-person" = "mp")
-    all_dfs[[paste(ttype, s_abbr, sep = "_")]] <- df_rel
-  }}
+      id_cols <- c("DATA_YEAR", "COUNTY", "RACE", "TABLE_TYPE")
+      
+      df_rel <- df_bind |>
+        filter(TABLE_TYPE == ttype & HHSIZE == s)|>
+        pivot_wider(id_cols = id_cols,
+                    names_from = "race_type",
+                    names_glue = "{race_type}_{.value}",
+                    values_from = c("HINCP_median", "HINCP_median_moe", "reliability"))|>
+        arrange(COUNTY)
+      
+      s_abbr <- switch(s, "single-person" = "sp", "multi-person" = "mp")
+      all_dfs[[paste(ttype, s_abbr, sep = "_")]] <- df_rel
+    }}
 }
 
-# write.xlsx(all_dfs, "median-income-hhsize/data/median-income-by-re-singleperson.xlsx")
-# write.xlsx(all_dfs, "median-income-hhsize/data/median-income-by-re-multiperson.xlsx")
 write.xlsx(all_dfs, "median-income-hhsize/data/median-income-by-re-hhsize.xlsx")
