@@ -1,5 +1,4 @@
-# This script combines the two RDS files and separates the data frames by geography, median values, and reliability into 
-# an excel workbook
+# This script combines the two RDS files and separates the data frames by geography, count values, and reliability into an excel workbook
 
 library(tidyverse)
 library(openxlsx)
