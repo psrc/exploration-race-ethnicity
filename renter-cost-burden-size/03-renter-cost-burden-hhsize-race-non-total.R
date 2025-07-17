@@ -90,17 +90,43 @@ saveRDS(main_df, "renter-cost-burden-size/data/non-total-counts-df.rds")
 
 
 # # check against ACS -----
-# acs_df <- get_acs_recs(geography ='county', 
+# library(psrccensus)
+# 
+# acs_df <- get_acs_recs(geography ='county',
 #                        table.names = 'DP04',
-#                        years = 2023, # refers to the list of years that was set above
-#                        acs.type = 'acs5') 
-# acs_rent <- acs_df %>% 
+#                        years = 2018, # refers to the list of years that was set above
+#                        acs.type = 'acs5')
+# acs_rent <- acs_df %>%
 #   filter(variable=="DP04_0141P"| #GROSS RENT AS A PERCENTAGE OF HOUSEHOLD INCOME (GRAPI)!!Occupied units paying rent (excluding units where GRAPI cannot be computed)!!30.0 to 34.9 percent
 #            variable=="DP04_0142P") #GROSS RENT AS A PERCENTAGE OF HOUSEHOLD INCOME (GRAPI)!!Occupied units paying rent (excluding units where GRAPI cannot be computed)!!35.0 percent or more
-# 
+#
 # acs_rent_burdened <- acs_rent %>%   
 #   group_by(name) %>% #county name
 #   summarise(estimate_percent=sum(estimate))
+# 
+# # estimates, not percentage b/c need to add estimates to get regional numbers -------
+# acs_rent <- acs_df %>%
+#   filter(variable=="DP04_0136" | #GROSS RENT AS A PERCENTAGE OF HOUSEHOLD INCOME (GRAPI)!!Occupied units paying rent (excluding units where GRAPI cannot be computed)
+#            variable=="DP04_0141"| #GROSS RENT AS A PERCENTAGE OF HOUSEHOLD INCOME (GRAPI)!!Occupied units paying rent (excluding units where GRAPI cannot be computed)!!30.0 to 34.9 percent
+#            variable=="DP04_0142") #GROSS RENT AS A PERCENTAGE OF HOUSEHOLD INCOME (GRAPI)!!Occupied units paying rent (excluding units where GRAPI cannot be computed)!!35.0 percent or more
+# 
+# acs_rent_region <- acs_rent %>% 
+#   filter(name=="Region") %>% 
+#   mutate(cost_burden=ifelse(grepl("DP04_014", variable), "cost-burdened", "total")) %>% 
+#   group_by(cost_burden) %>% 
+#   summarise(estimate=sum(estimate))
+# 
+# acs_own <- acs_df %>% 
+#   filter(variable=="DP04_0110" | #SELECTED MONTHLY OWNER COSTS AS A PERCENTAGE OF HOUSEHOLD INCOME (SMOCAPI)!!Housing units with a mortgage (excluding units where SMOCAPI cannot be computed)
+#            variable=="DP04_0114" | #SELECTED MONTHLY OWNER COSTS AS A PERCENTAGE OF HOUSEHOLD INCOME (SMOCAPI)!!Housing units with a mortgage (excluding units where SMOCAPI cannot be computed)!!30.0 to 34.9 percent
+#            variable=="DP04_0115") #SELECTED MONTHLY OWNER COSTS AS A PERCENTAGE OF HOUSEHOLD INCOME (SMOCAPI)!!Housing units with a mortgage (excluding units where SMOCAPI cannot be computed)!!35.0 percent or more
+# 
+# acs_own_region <- acs_own %>% 
+#   filter(name=="Region") %>% 
+#   mutate(cost_burden=ifelse(grepl("percent", label), "cost-burdened", "total")) %>% 
+#   group_by(cost_burden) %>% 
+#   summarise(estimate=sum(estimate))
+# 
 # 
 # # check against PUMS -----
 # get_data <- get_psrc_pums(5, dyear , "h", 
