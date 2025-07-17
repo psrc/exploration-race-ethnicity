@@ -1,4 +1,4 @@
-# This script will produce a rds that compiles non-total median income by geography, race, and table detail types
+# This script will produce a rds that compiles non-total count values by geography, race, and table detail types
 
 library(tidyverse)
 library(magrittr)

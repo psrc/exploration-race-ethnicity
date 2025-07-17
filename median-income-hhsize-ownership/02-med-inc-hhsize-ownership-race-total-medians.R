@@ -1,11 +1,11 @@
-# This script will produce a rds that calculates the 'Total Count values' for Multirace, Multiple Races, and People of Color by the
+# This script will produce a rds that calculates the 'Total Median of Median values' for Multirace, Multiple Races, and People of Color by the
 # table detail types: Detail, Dichot, and Single 
 
 library(tidyverse)
 library(magrittr)
 
 # retrieve data
-source("renter-cost-burden/01-renter-cost-burden-race-get-data.R")
+source("median-income-hhsize-ownership/01-med-inc-hhsize-ownership-race-get-data.R")
 
 race_vars <- c("ARACE", "PRACE", "HRACE")
 table_types <- c("detail", "dichot", "single")
@@ -24,10 +24,10 @@ cat_multiple_race <- function(df, race_col, x) {
 
 cat_poc <- function(df, race_col, x) {
   newcol <- paste0(x, "cat_poc")
-  df |> mutate({{newcol}} := ifelse(!(.data[[race_col]] %in% c("Total", "White alone", NA)), "People of Color", "Not People of Color"))
+  df |> mutate({{newcol}} := ifelse(!c(.data[[race_col]] %in% c("Total", "White alone", NA)), "People of Color", "Not People of Color"))
 }
 
-create_total_counts <- function(raw_pums) {
+create_total_medians <- function(raw_pums) {
   
   # add labeling columns
   dl <- reduce2(race_vars, list("a", "p", "h"), cat_multirace, .init = raw_pums)
@@ -36,29 +36,30 @@ create_total_counts <- function(raw_pums) {
   
   group_vars <- str_subset(colnames(dl$variables), ".*t_.*")
   
-  # calc counts
+  # calc medians
   main_df <- NULL
   for(var in group_vars) {
-    count_reg <- psrc_pums_count(dl, 
-                                 group_vars=c(var, "rent_burden"), 
-                                 incl_na=FALSE, 
-                                 rr=TRUE) %>%
-      filter(rent_burden == "cost-burdened")
+    med_reg <- psrc_pums_median(dl,
+                                stat_var = "HINCP",
+                                group_vars = c(var,"hhsz_binary","OWN_RENT"),
+                                incl_na = FALSE,
+                                rr = TRUE) |>
+      filter(OWN_RENT == "Owned")
     
     # extract record that's not Total and ^Not
-    cats <- str_subset(unique(count_reg[[var]]), "^Total|^Not.*")
+    cats <- str_subset(unique(med_reg[[var]]), "^Total|^Not.*")
     
-    count_reg <- count_reg |>
+    med_reg <- med_reg |>
       filter(!(.data[[var]] %in% cats))
     
-    count_cnty <- psrc_pums_count(dl, 
-                                  group_vars=c("COUNTY",var,"rent_burden"), 
-                                  incl_na=FALSE, 
-                                  rr=TRUE) %>%
-      filter(rent_burden == "cost-burdened") %>% 
-      filter(COUNTY != "Region")
+    med_cnty <- psrc_pums_median(dl,
+                                 stat_var = "HINCP",
+                                 group_vars = c("COUNTY",var,"hhsz_binary","OWN_RENT"),
+                                 incl_na = FALSE,
+                                 rr = TRUE) |> 
+      filter(COUNTY != "Region", OWN_RENT == "Owned")
     
-    count_cnty <- count_cnty |>
+    med_cnty <- med_cnty |>
       filter(!(.data[[var]] %in% cats))
     
     # extract identifiers (race column type)
@@ -66,12 +67,11 @@ create_total_counts <- function(raw_pums) {
     rt_name <- switch(rt, "acat" = "ARACE", "pcat" = "PRACE", "hcat" = "HRACE")
     
     # assemble and rename var to generic colnames and add new column to identify type of raw table
-    rs <- bind_rows(count_reg, count_cnty) |>
+    rs <- bind_rows(med_reg, med_cnty) |>
       mutate(race_type = rt_name) |>
       mutate(COUNTY = factor(COUNTY, levels = c("Region", "King", "Kitsap", "Pierce", "Snohomish"))) |>
       rename(race = var) |>
-      arrange(COUNTY) |>
-      filter(race != "cost-burdened")
+      arrange(COUNTY)
     
     # bind to main table
     ifelse(is.null(main_df), main_df <- rs, main_df <- bind_rows(main_df, rs))
@@ -80,20 +80,19 @@ create_total_counts <- function(raw_pums) {
   return(main_df)
 }
 
-# create total counts ----
+# create total medians ----
 
 all_dfs <- map2(list(pums_raw_hh_mrdetail,
-                     pums_raw_hh_mrdichot,
-                     pums_raw_hh_mrsingle), 
+                    pums_raw_hh_mrdichot,
+                    pums_raw_hh_mrsingle), 
                 table_types,
-                ~create_total_counts(.x) |> mutate(table_type = .y)) 
+                ~create_total_medians(.x) |> mutate(table_type = .y)) 
 
 all_dfs <- reduce(all_dfs, bind_rows)
 
 all_dfs <- all_dfs |> 
   mutate(race = paste("Total", race))
 
+saveRDS(all_dfs, "median-income-hhsize-ownership/data/total-counts-df.rds")
 
-saveRDS(all_dfs, "renter-cost-burden/data/total-counts-df.rds")
-
-# readRDS("renter-cost-burden/data/total-counts-df.rds")
+# readRDS("median-income-hhsize-ownership/data/total-counts-df.rds")

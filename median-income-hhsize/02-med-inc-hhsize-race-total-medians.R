@@ -93,7 +93,5 @@ all_dfs <- all_dfs |>
   mutate(race = paste("Total", race))
 
 saveRDS(all_dfs, "median-income-hhsize/data/total-counts-df.rds")
-# saveRDS(all_dfs, "median-income-hhsize/data/total-counts-df-singleperson.rds")
-# saveRDS(all_dfs, "median-income-hhsize/data/total-counts-df-multiperson.rds")
 
 # readRDS("median-income-hhsize/data/total-counts-df-multiperson.rds")

@@ -7,14 +7,12 @@ library(openxlsx)
 race_vars <- c("ARACE", "PRACE", "HRACE")
 table_types <- c("detail", "dichot", "single")
 
-# file_names <- c("non-total-counts-df-singleperson.rds", "total-counts-df-singleperson.rds")
-# file_names <- c("non-total-counts-df-multiperson.rds","total-counts-df-multiperson.rds")
 file_names <- c("non-total-counts-df.rds","total-counts-df.rds")
 
 
 # compile into one df ----
 
-df_bind <- map(file_names, ~readRDS(file.path("median-income-hhsize/data/", .x))) |>
+df_bind <- map(file_names, ~readRDS(file.path("median-income-hhsize-ownership/data/", .x))) |>
   bind_rows() |>
   rename_with(toupper, c(race, table_type)) |>
   rename("HHSIZE" = "hhsz_binary")
@@ -51,4 +49,4 @@ for (ttype in table_types) {
     }}
 }
 
-write.xlsx(all_dfs, "median-income-hhsize/data/median-income-by-re-hhsize.xlsx")
+write.xlsx(all_dfs, "median-income-hhsize-ownership/data/median-income-by-re-hhsize-ownership.xlsx")
