@@ -44,7 +44,7 @@ for (ttype in table_types) {
       arrange(COUNTY)
     
     s_abbr <- switch(s, "single-person" = "sp", "multi-person" = "mp")
-    all_dfs[[paste(ttype, sep = "_")]] <- df_rel
+    all_dfs[[paste(ttype, s_abbr, sep = "_")]] <- df_rel
     
     }}
 }
