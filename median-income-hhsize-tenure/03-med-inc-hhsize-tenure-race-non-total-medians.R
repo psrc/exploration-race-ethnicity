@@ -21,32 +21,36 @@ for(ttype in table_types) {
   for(var in race_vars) {
     med_reg <- psrc_pums_median(dl,
                                 stat_var = "HINCP",
-                                group_vars = c(var,"hhsz_binary","OWN_RENT"),
+                                group_vars = c(var,"OWN_RENT","hhsz_binary"),
                                 incl_na = FALSE,
                                 rr = TRUE) |>
-      filter(OWN_RENT != "Total")
+      filter(OWN_RENT != "Total" & hhsz_binary != "Total")
     
     med_cnty <- psrc_pums_median(dl,
                                  stat_var = "HINCP",
-                                 group_vars = c("COUNTY",var,"hhsz_binary","OWN_RENT"),
+                                 group_vars = c("COUNTY",var,"OWN_RENT","hhsz_binary"),
                                  incl_na = FALSE,
                                  rr = TRUE) |> 
-      filter(COUNTY != "Region", OWN_RENT != "Total")
+      filter(COUNTY != "Region", 
+             OWN_RENT != "Total" & hhsz_binary != "Total")
     
     # extract from tables below where: XRace == "Total" 
     med_reg2 <- psrc_pums_median(dl,
                                  stat_var = "HINCP",
-                                 group_vars = c("hhsz_binary", var,"OWN_RENT"),
+                                 # group_vars = c("hhsz_binary", var,"OWN_RENT"),
+                                 group_vars = c("OWN_RENT","hhsz_binary", var),
                                  incl_na = FALSE,
                                  rr = TRUE) |>
-      filter(OWN_RENT != "Total")
+      filter(OWN_RENT != "Total" & hhsz_binary != "Total")
     
     med_cnty2 <- psrc_pums_median(dl,
                                   stat_var = "HINCP",
-                                  group_vars = c("COUNTY","hhsz_binary", var,"OWN_RENT"),
+                                  # group_vars = c("COUNTY","hhsz_binary", var,"OWN_RENT"),
+                                  group_vars = c("COUNTY","OWN_RENT","hhsz_binary", var),
                                   incl_na = FALSE,
                                   rr = TRUE)|> 
-      filter(COUNTY != "Region", OWN_RENT == "Owned")
+      filter(COUNTY != "Region", 
+             OWN_RENT == "Owned" & hhsz_binary != "Total")
     
     # rename var to generic colnames to assemble and add new column to identify type of raw table
     rs <- bind_rows(med_reg, med_cnty) |>

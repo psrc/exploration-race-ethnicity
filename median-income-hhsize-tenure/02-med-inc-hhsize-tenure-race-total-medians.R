@@ -38,7 +38,7 @@ create_total_medians <- function(raw_pums) {
   
   # med_reg <- psrc_pums_median(pums_raw_hh_mrdetail,
   #                             stat_var = "HINCP",
-  #                             group_vars = c("ARACE","hhsz_binary","OWN_RENT"),
+  #                             group_vars = c("ARACE","OWN_RENT","hhsz_binary"),
   #                             incl_na = FALSE,
   #                             rr = TRUE)
   
@@ -47,10 +47,10 @@ create_total_medians <- function(raw_pums) {
   for(var in group_vars) {
     med_reg <- psrc_pums_median(dl,
                                 stat_var = "HINCP",
-                                group_vars = c(var,"hhsz_binary","OWN_RENT"),
+                                group_vars = c(var,"OWN_RENT","hhsz_binary"),
                                 incl_na = FALSE,
                                 rr = TRUE) |>
-      filter(OWN_RENT != "Total")
+      filter(OWN_RENT != "Total" & hhsz_binary != "Total")
     
     # extract record that's not Total and ^Not
     cats <- str_subset(unique(med_reg[[var]]), "^Total|^Not.*")
@@ -60,10 +60,11 @@ create_total_medians <- function(raw_pums) {
     
     med_cnty <- psrc_pums_median(dl,
                                  stat_var = "HINCP",
-                                 group_vars = c("COUNTY",var,"hhsz_binary","OWN_RENT"),
+                                 group_vars = c("COUNTY",var,"OWN_RENT", "hhsz_binary"),
                                  incl_na = FALSE,
                                  rr = TRUE) |> 
-      filter(COUNTY != "Region", OWN_RENT != "Total")
+      filter(COUNTY != "Region", 
+             OWN_RENT != "Total" & hhsz_binary != "Total")
     
     med_cnty <- med_cnty |>
       filter(!(.data[[var]] %in% cats))
