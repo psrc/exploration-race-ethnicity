@@ -1,4 +1,4 @@
-# This script will produce a rds that calculates the 'Total Median of Median values' for Multirace, Multiple Races, and People of Color by the
+# This script will produce a rds that calculates the Multirace, Multiple Races, People of Color, and Single-race households total rows
 # table detail types: Detail, Dichot, and Single 
 
 library(tidyverse)
@@ -27,12 +27,18 @@ cat_poc <- function(df, race_col, x) {
   df |> mutate({{newcol}} := ifelse(!c(.data[[race_col]] %in% c("Total", "White alone", NA)), "People of Color", "Not People of Color"))
 }
 
+cat_single_race <- function(df, race_col, x) {
+  newcol <- paste0(x, "cat_single")
+  df |> mutate({{newcol}} := ifelse(str_detect(.data[[race_col]], "^Multi.*"), "Not single-race", "Single-race"))
+}
+
 create_total_medians <- function(raw_pums) {
   
   # add labeling columns
   dl <- reduce2(race_vars, list("a", "p", "h"), cat_multirace, .init = raw_pums)
   dl <- reduce2(race_vars, list("a", "p", "h"), cat_multiple_race, .init = dl)
   dl <- reduce2(race_vars, list("a", "p", "h"), cat_poc, .init = dl)
+  dl <- reduce2(race_vars, list("a", "p", "h"), cat_single_race, .init = dl)
   
   group_vars <- str_subset(colnames(dl$variables), ".*t_.*")
   
