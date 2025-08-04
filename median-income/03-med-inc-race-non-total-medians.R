@@ -8,6 +8,9 @@ unloadNamespace("psrccensus")
 source("median-income/01-med-inc-race-get-data.R")
 # source("C:/Users/mrichards/Documents/GitHub/exploration-race-ethnicity/median-income/01-med-inc-race-get-data.R")
 
+# remove functions in environment created in previous scripts
+rm(list = lsf.str(envir = .GlobalEnv), envir = .GlobalEnv)
+
 race_vars <- c("ARACE", "PRACE", "HRACE")
 table_types <- c("detail", "dichot", "single")
 

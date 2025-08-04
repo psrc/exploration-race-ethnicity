@@ -7,6 +7,9 @@ library(magrittr)
 unloadNamespace("psrccensus")
 source("renter-cost-burden/01-renter-cost-burden-race-get-data.R")
 
+# remove functions in environment created in previous scripts
+rm(list = lsf.str(envir = .GlobalEnv), envir = .GlobalEnv)
+
 race_vars <- c("ARACE", "PRACE", "HRACE")
 table_types <- c("detail", "dichot", "single")
 
