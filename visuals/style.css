@@ -1,0 +1,10 @@
+.main-container {
+  max-width: 100% !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+
+body {
+  font-family: "Poppins", sans-serif;
+}
+
