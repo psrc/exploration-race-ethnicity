@@ -21,10 +21,8 @@ create_bar_chart <- function(df, title) {
     coord_cartesian(ylim = c(0, 250000)) +
     scale_y_continuous(labels = comma, expand = c(0,0)) +
     scale_x_discrete(labels = label_wrap(width = 15)) +
-    # scale_x_discrete(labels = label_wrap(width = 25)) +
     scale_fill_discrete(palette = psrc_colors$pognbgy_5, name = "Median HINCP") +
     labs(title = title,
-         # subtitle = "HINCP",
          x = NULL,
          y = NULL) +
     theme(plot.title = element_text(size = 22, margin = margin(t = 1, b = 1, unit = "cm")),
@@ -34,13 +32,13 @@ create_bar_chart <- function(df, title) {
           axis.ticks.x = element_blank(),
           axis.ticks.y = element_blank(),
           text = element_text(family = "Poppins"),
-          panel.grid.major = element_blank(),
           panel.grid.minor = element_blank(),
+          panel.grid.major.y = element_line(color = "lightgrey", linetype = "solid", size = 0.5),
           panel.background = element_blank(),
           legend.position = "bottom",
           legend.text = element_text(size = 20),
-          legend.title = element_text(size = 16),
-          legend.key.size = unit(1, "cm"),
+          legend.title = element_text(size = 20),
+          legend.key.size = unit(.75, "cm"),
           legend.spacing = unit(1, "cm")
           # axis.line.y = element_line(colour = "gray")
           )
@@ -66,6 +64,8 @@ for(t in df_e$tab_name) {
     filter(COUNTY == "Region") |> 
     select(RACE, ends_with("median"), ends_with("moe")) 
   
+  races_ord <- r$RACE
+  
   df_long <- r |> 
     pivot_longer(cols = -RACE,
                  names_to = "variable",
@@ -85,7 +85,8 @@ for(t in df_e$tab_name) {
     ) |> 
     mutate(upper = median + moe,
            lower = median - moe) |> 
-    mutate(description = factor(description, levels = c("PRACE", "ARACE", "HRACE"))) |> 
+    mutate(description = factor(description, levels = c("PRACE", "ARACE", "HRACE")),
+           RACE = factor(RACE, levels = races_ord)) |> 
     arrange(RACE, description)
   
   # categories <- unique(df_long$RACE)
