@@ -6,7 +6,7 @@ library(showtext)
 library(psrcplot)
 library(here)
 
-datafile <- here("visuals/median-income-by-re-hhsize-tenure-with-differences.xlsx")
+datafile <- here("visuals/median-income-by-re-hhsize-tenure.xlsx")
 
 font_add_google("Poppins")
 showtext_auto()
