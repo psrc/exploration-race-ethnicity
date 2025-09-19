@@ -4,7 +4,7 @@
 library(tidyverse)
 library(openxlsx)
 
-race_vars <- c("ARACE", "PRACE", "HRACE")
+race_vars <- c("PRACE", "ARACE", "HRACE")
 table_types <- c("detail", "dichot", "single")
 
 # file_names <- c("non-total-counts-df-singleperson.rds", "total-counts-df-singleperson.rds")
@@ -42,7 +42,7 @@ for (ttype in table_types) {
       pivot_wider(id_cols = id_cols,
                   names_from = "race_type",
                   names_glue = "{race_type}_{.value}",
-                  values_from = c("count", "share", "reliability"))|>
+                  values_from = c("count", "share", "count_moe", "share_moe", "reliability"))|>
       arrange(COUNTY)
     
     s_abbr <- switch(s, "single-person" = "sp", "multi-person" = "mp")

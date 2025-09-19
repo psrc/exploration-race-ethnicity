@@ -4,7 +4,7 @@
 library(tidyverse)
 library(openxlsx)
 
-race_vars <- c("ARACE", "PRACE", "HRACE")
+race_vars <- c("PRACE", "ARACE", "HRACE")
 table_types <- c("detail", "dichot", "single")
 
 file_names <- c("non-total-counts-df.rds", "total-counts-df.rds")
@@ -15,8 +15,8 @@ df_bind <- map(file_names, ~readRDS(file.path("household-count/data/", .x))) |>
   bind_rows() |> 
   rename_with(toupper, c(race, table_type))
 
-dfs_count <- df_bind |> 
-  select(!c(reliability, ends_with("moe")))
+# dfs_count <- df_bind |> 
+#   select(!c(reliability, ends_with("moe")))
 
 dfs_rel <- df_bind |> 
   select(!starts_with("H"))
@@ -37,7 +37,7 @@ for (ttype in table_types) {
       pivot_wider(id_cols = id_cols,
                   names_from = "race_type",
                   names_glue = "{race_type}_{.value}",
-                  values_from = c("count", "share", "reliability"))|>
+                  values_from = c("count", "share", "count_moe", "share_moe", "reliability"))|>
       arrange(COUNTY)
     
     all_dfs[[paste(ttype, sep = "_")]] <- df_rel

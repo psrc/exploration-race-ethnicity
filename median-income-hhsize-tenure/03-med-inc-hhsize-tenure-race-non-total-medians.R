@@ -10,7 +10,7 @@ source("median-income-hhsize-tenure/01-med-inc-hhsize-tenure-race-get-data.R")
 # remove functions in environment created in previous scripts
 rm(list = lsf.str(envir = .GlobalEnv), envir = .GlobalEnv)
 
-race_vars <- c("ARACE", "PRACE", "HRACE")
+race_vars <- c("PRACE", "ARACE", "HRACE")
 table_types <- c("detail", "dichot", "single")
 
 # compile non-aggregated totals (i.e not Multirace, Multiple Races, POC) ----

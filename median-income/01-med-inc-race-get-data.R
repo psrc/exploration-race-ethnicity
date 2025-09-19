@@ -1,4 +1,4 @@
-race_vars <- c("ARACE", "PRACE", "HRACE")
+race_vars <- c("PRACE", "ARACE", "HRACE")
 dyear <- 2023
 # library_loc <- "C:/Users/CLam/AppData/Local/R/win-library/4.4"
 library_loc <- "C:/Users/mrichards/AppData/Local/R/win-library/4.4"

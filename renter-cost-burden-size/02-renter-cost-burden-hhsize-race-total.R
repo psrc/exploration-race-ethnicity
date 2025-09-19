@@ -7,7 +7,7 @@ library(magrittr)
 # retrieve data
 source("renter-cost-burden-size/01-renter-cost-burden-hhsize-race-get-data.R")
 
-race_vars <- c("ARACE", "PRACE", "HRACE")
+race_vars <- c("PRACE", "ARACE", "HRACE")
 table_types <- c("detail", "dichot", "single")
 
 # functions ----
@@ -35,10 +35,10 @@ cat_single_race <- function(df, race_col, x) {
 create_total_counts <- function(raw_pums) {
   
   # add labeling columns
-  dl <- reduce2(race_vars, list("a", "p", "h"), cat_multirace, .init = raw_pums)
-  dl <- reduce2(race_vars, list("a", "p", "h"), cat_multiple_race, .init = dl)
-  dl <- reduce2(race_vars, list("a", "p", "h"), cat_poc, .init = dl)
-  dl <- reduce2(race_vars, list("a", "p", "h"), cat_single_race, .init = dl)
+  dl <- reduce2(race_vars, list("p", "a", "h"), cat_multirace, .init = raw_pums)
+  dl <- reduce2(race_vars, list("p", "a", "h"), cat_multiple_race, .init = dl)
+  dl <- reduce2(race_vars, list("p", "a", "h"), cat_poc, .init = dl)
+  dl <- reduce2(race_vars, list("p", "a", "h"), cat_single_race, .init = dl)
   
   group_vars <- str_subset(colnames(dl$variables), ".*t_.*")
   

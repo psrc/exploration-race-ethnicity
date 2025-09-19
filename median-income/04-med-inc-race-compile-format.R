@@ -4,7 +4,7 @@
 library(tidyverse)
 library(openxlsx)
 
-race_vars <- c("ARACE", "PRACE", "HRACE")
+race_vars <- c("PRACE", "ARACE", "HRACE")
 table_types <- c("detail", "dichot", "single")
 
 file_names <- c("non-total-medians-df.rds", "total-median-df.rds")

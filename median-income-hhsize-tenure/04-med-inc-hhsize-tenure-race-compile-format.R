@@ -5,7 +5,7 @@ library(tidyverse)
 library(openxlsx)
 library(scales) #percent()
 
-race_vars <- c("ARACE", "PRACE", "HRACE")
+race_vars <- c("PRACE", "ARACE", "HRACE")
 table_types <- c("detail", "dichot", "single")
 
 file_names <- c("non-total-counts-df.rds","total-counts-df.rds")
@@ -18,8 +18,8 @@ df_bind <- map(file_names, ~readRDS(file.path("median-income-hhsize-tenure/data/
   rename_with(toupper, c(race, table_type)) |>
   rename("HHSIZE" = "hhsz_binary")
 
-dfs_med <- df_bind |> 
-  select(!c(reliability, ends_with("moe")))
+# dfs_med <- df_bind |> 
+#   select(!c(reliability, ends_with("moe")))
 
 dfs_rel <- df_bind |> 
   select(!starts_with("HIN"))
@@ -66,11 +66,11 @@ calc_differences <- function(df1, df2, output_df){
     left_join(all_dfs[[df2]], 
               by = c('DATA_YEAR', 'COUNTY', 'RACE', 'TABLE_TYPE')) %>% 
     select(-contains(c("moe","reliability"))) %>% 
-    mutate(dif_ARACE = round(ARACE_HINCP_median.x-ARACE_HINCP_median.y, digits = 2),
-           dif_PRACE = round(PRACE_HINCP_median.x-PRACE_HINCP_median.y, digits = 2),
+    mutate(dif_PRACE = round(PRACE_HINCP_median.x-PRACE_HINCP_median.y, digits = 2),
+           dif_ARACE = round(ARACE_HINCP_median.x-ARACE_HINCP_median.y, digits = 2),
            dif_HRACE = round(HRACE_HINCP_median.x-HRACE_HINCP_median.y, digits = 2),
+           percdif_PRACE = percent((PRACE_HINCP_median.x - PRACE_HINCP_median.y) / PRACE_HINCP_median.y, accuracy = 0.1),
            percdif_ARACE = percent((ARACE_HINCP_median.x - ARACE_HINCP_median.y) / ARACE_HINCP_median.y, accuracy = 0.1),
-           percdif_PRACE = percent((PRACE_HINCP_median.x - PRACE_HINCP_median.y) / PRACE_HINCP_median.y, accuracy = 0.1), 
            percdif_HRACE = percent((HRACE_HINCP_median.x - HRACE_HINCP_median.y) / HRACE_HINCP_median.y, accuracy = 0.1)) %>% 
     select(-contains(c(".x", ".y")))
 }

@@ -21,4 +21,3 @@ install_github("psrc/psrccensus",
                ref = "multiracial_dichotomy",
                lib = paths[2],
                force = TRUE)
-
