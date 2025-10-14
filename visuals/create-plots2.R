@@ -5,10 +5,8 @@ library(showtext)
 library(psrcplot)
 library(here)
 
-source('visuals/function-plot.R')
-
+source(here::here('visuals/function-plot.R'))
 # indicators <- c("household-count", "ownership_rate", "renter-cost-burden", "median-income")
-
 create_plots <- function(indicator, vars_options = c(1, 2, 3), ind_value = c("share", "count", "median")) {
   
   if(indicator == "median-income" & ind_value != "median") {
@@ -19,14 +17,12 @@ create_plots <- function(indicator, vars_options = c(1, 2, 3), ind_value = c("sh
   vars <- c("-by-re.xlsx", "-by-re-hhsize.xlsx", "-by-re-hhsize-tenure.xlsx")
   
   e <- data.frame(first = c("detail", "dichot"), second = c("mp", "sp"), third = c("own", "rent"))
+  
   df_e <- expand.grid(e) |> 
     mutate(vo2 = paste(first, second, sep = "_")) |> 
-    mutate(vo3 = paste(first, second, third, sep = "_")) |> 
-    mutate(second_text = case_when(second == "mp" ~ "Multi-Person",
-                                   second == "sp" ~ "Single-Person")) #|> 
-    # mutate(plot_name = str_to_title(paste(first, second_text, third)))
+    mutate(vo3 = paste(first, second, third, sep = "_"))
   
-  # all_plots <- list()
+  all_plots <- list()
   all_tables <- list()
   
   datafile <- paste0(indicator, vars[[vars_options]])
@@ -40,7 +36,7 @@ create_plots <- function(indicator, vars_options = c(1, 2, 3), ind_value = c("sh
   }
   
   for(t in tab_names) {
-    df <- read.xlsx(file.path("visuals", datafile), sheet = t)
+    df <- read.xlsx(here::here("visuals", datafile), sheet = t)
     
     r <- df |> 
       filter(COUNTY == "Region") |> 
@@ -77,13 +73,30 @@ create_plots <- function(indicator, vars_options = c(1, 2, 3), ind_value = c("sh
       arrange(RACE, description)
     
     all_tables[[t]] <- df_long
+
+    plot_name <- str_replace_all(vars[vars_options], "-", " ") |> 
+      str_replace_all(".xlsx", "") |> 
+      str_replace_all("\\sre", " Race and Ethnicity") |> 
+      str_replace_all("hhsize", "Household Size")
     
-    # chart_name <- df_e |> filter(tab_name == t) |> pull(plot_name)
-    all_plots[[t]] <- create_bar_chart(df = df_long, title = chart_name)
+    plot_name <- str_replace_all(plot_name, "Ethnicity ", "Ethnicity, " ) |> 
+      str_replace_all(" tenure", ", and Tenure")
+
+    subtitle_name <-  str_replace_all(t, "_", " ") |> 
+      str_to_title() |> 
+      str_replace_all("Mp", "Multi-Person") |>   
+      str_replace_all("Sp", "Single-Person")
+    
+    ind <- str_replace_all(indicator, "-", " ") |> 
+      str_to_title()
+    
+    sub <- str_squish(paste0(subtitle_name, plot_name))
+    all_plots[[t]] <- create_bar_chart(df = df_long, title = ind, subtitle = sub)
   }
   
  return(list(tables = all_tables, plots = all_plots))
 }
+
 
 # test <- create_plots("household-count", 1, "count")
 # test2 <- create_plots("household-count", 2, "share")
