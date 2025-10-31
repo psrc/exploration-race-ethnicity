@@ -23,14 +23,14 @@ for(ttype in table_types) {
   
   for(var in race_vars) {
     count_reg <- psrc_pums_count(dl, 
-                                 group_vars=c(var,"hhsz_binary"), 
+                                 group_vars=c("hhsz_binary",var), 
                                  incl_na=FALSE, 
                                  rr=TRUE) #%>%
       # filter(hhsz_binary == "single-person") #%>%
       # filter(hhsz_binary == "multi-person") #or multi-person
     
     count_cnty <- psrc_pums_count(dl, 
-                                  group_vars=c("COUNTY",var,"hhsz_binary"), 
+                                  group_vars=c("COUNTY","hhsz_binary",var), 
                                   incl_na=FALSE, 
                                   rr=TRUE) %>%
       # filter(hhsz_binary == "single-person") %>%
@@ -44,7 +44,7 @@ for(ttype in table_types) {
                                   rr=TRUE)
     
     count_cnty2 <- psrc_pums_count(dl, 
-                                   group_vars=c("COUNTY","hhsz_binary",var), 
+                                   group_vars=c("COUNTY",var, "hhsz_binary"), 
                                    incl_na=FALSE, 
                                    rr=TRUE)|> 
       filter(COUNTY != "Region")
@@ -58,15 +58,18 @@ for(ttype in table_types) {
       rename(race = var) |> 
       arrange(COUNTY)
     
-    rs2 <- bind_rows(count_reg2, count_cnty2) |> 
-      mutate(race_type = var,
-             table_type = ttype) |>
-      mutate(COUNTY = factor(COUNTY, levels = c("Region", "King", "Kitsap", "Pierce", "Snohomish"))) |>
-      rename(race = var) |> 
-      arrange(COUNTY) |> 
-      filter(race == 'Total' & hhsz_binary != 'Total')
+    # rs2 <- bind_rows(count_reg2, count_cnty2) |> 
+    #   mutate(race_type = var,
+    #          table_type = ttype) |>
+    #   mutate(COUNTY = factor(COUNTY, levels = c("Region", "King", "Kitsap", "Pierce", "Snohomish"))) |>
+    #   rename(race = var) |> 
+    #   arrange(COUNTY) |> 
+    #   filter(race == 'Total' & hhsz_binary != 'Total')
+    # 
+    # rs3 <- bind_rows(rs, rs2) |> 
+    #   arrange(COUNTY, race, hhsz_binary)
     
-    rs3 <- bind_rows(rs, rs2) |> 
+    rs3 <- rs |> 
       arrange(COUNTY, race, hhsz_binary)
     
     # bind to main table
@@ -78,4 +81,4 @@ saveRDS(main_df, "household-size/data/non-total-counts-df.rds")
 # saveRDS(main_df, "household-size/data/non-total-counts-df-singleperson.rds")
 # saveRDS(main_df, "household-size/data/non-total-counts-df-multiperson.rds")
 
-# readRDS("household-size/data/non-total-counts-df-singleperson.rds")
+# test2 <- readRDS("household-size/data/non-total-counts-df.rds")
