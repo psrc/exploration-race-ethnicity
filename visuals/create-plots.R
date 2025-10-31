@@ -1,3 +1,5 @@
+# This script contains the definition of function "create_plots()". Call the function in plots.Rmd or other scripts.
+# Use the following argument options:
 # Args:
 # indicator: "household-count", "ownership_rate", "renter-cost-burden", or "median-income"
 # vars_options: 1,2, or 3, where 1 = by re, 2 = by re and hhsize, 3 = by re, hhsize, and tenure
