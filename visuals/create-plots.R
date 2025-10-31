@@ -1,3 +1,8 @@
+# Args:
+# indicator: "household-count", "ownership_rate", "renter-cost-burden", or "median-income"
+# vars_options: 1,2, or 3, where 1 = by re, 2 = by re and hhsize, 3 = by re, hhsize, and tenure
+# ind_value:  "share", "count", or "median"
+
 library(tidyverse)
 library(openxlsx)
 library(scales)
@@ -6,7 +11,7 @@ library(psrcplot)
 library(here)
 
 source(here::here('visuals/function-plot.R'))
-# indicators <- c("household-count", "ownership_rate", "renter-cost-burden", "median-income")
+
 create_plots <- function(indicator, vars_options = c(1, 2, 3), ind_value = c("share", "count", "median")) {
   
   if(indicator == "median-income" & ind_value != "median") {
