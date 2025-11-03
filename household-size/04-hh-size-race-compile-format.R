@@ -86,5 +86,5 @@ for (ttype in table_types) {
 
 # write.xlsx(all_dfs, "household-size/data/household-size-by-re-singleperson.xlsx")
 # write.xlsx(all_dfs, "household-size/data/household-size-by-re-multiperson.xlsx")
-# write.xlsx(all_dfs, "household-size/data/household-count-by-re-hhsize.xlsx")
-write.xlsx(all_dfs, "household-size/data/test/household-count-by-re-hhsize.xlsx")
+write.xlsx(all_dfs, "household-size/data/household-count-by-re-hhsize.xlsx")
+# write.xlsx(all_dfs, "household-size/data/test/household-count-by-re-hhsize.xlsx")
