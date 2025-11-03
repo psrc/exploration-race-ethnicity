@@ -1,5 +1,5 @@
 ---
-title: "Race & Ethnicity by Median HINCP"
+title: "Race & Ethnicity"
 output: 
   html_document:
     css: style.css
@@ -11,24 +11,39 @@ knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE, fig.width 
 source(here::here("visuals/create-plots.R"))
 ```
 
-### {.tabset} 
+# {.tabset} 
 
-```{r tabs, results='asis'}
+## Household Counts
 
-tabs <- c("dichot", "detail")
+### {.tabset}
 
-for(tab in tabs) {
+#### Count
 
-  cat('\n')
-  cat('#### ', str_to_title(tab), '   \n')
-  cat('\n')
+```{r hhcount count}
 
-  select_plots <- keep(all_plots, str_detect(names(all_plots), paste0('^', tab, '.*')))
+hhc_re <- create_plots("household-count", 1, "count")
 
-  walk(select_plots, ~print(.x))
+hhc_re_hhsize <- create_plots("household-count", 2, "count")
 
-  cat('\n')
-}
+iwalk(hhc_re$plots, ~print(.x))
+
+iwalk(hhc_re_hhsize$plots, ~print(.x))
 
 ```
+
+#### Shares
+
+```{r hhcount share}
+
+hhs_re <- create_plots("household-count", 1, "share")
+
+hhs_re_hhsize <- create_plots("household-count", 2, "share")
+
+iwalk(hhs_re$plots, ~print(.x))
+
+iwalk(hhs_re_hhsize$plots, ~print(.x))
+
+```
+
+
 
