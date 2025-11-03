@@ -60,14 +60,14 @@ for(ttype in table_types) {
     rs <- bind_rows(count_reg, count_cnty) |>
       mutate(race_type = var,
              table_type = ttype) |>
-      mutate(COUNTY = factor(COUNTY, levels = c("King", "Kitsap", "Pierce", "Snohomish", "Region"))) |>
+      mutate(COUNTY = factor(COUNTY, levels = c("Region", "King", "Kitsap", "Pierce", "Snohomish"))) |>
       rename(race = var) |> 
       arrange(COUNTY)
     
     rs2 <- bind_rows(count_reg2, count_cnty2) |>
       mutate(race_type = var,
              table_type = ttype) |>
-      mutate(COUNTY = factor(COUNTY, levels = c("King", "Kitsap", "Pierce", "Snohomish", "Region"))) |>
+      mutate(COUNTY = factor(COUNTY, levels = c("Region", "King", "Kitsap", "Pierce", "Snohomish"))) |>
       rename(race = var) |> 
       arrange(COUNTY) |> 
       filter(race == 'Total')
@@ -82,4 +82,4 @@ for(ttype in table_types) {
 
 saveRDS(main_df, "ownership-rate-hhsize/data/non-total-counts-df.rds")
 
-readRDS("ownership-rate-hhsize/data/non-total-counts-df.rds")
+#readRDS("ownership-rate-hhsize/data/non-total-counts-df.rds")

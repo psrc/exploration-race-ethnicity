@@ -37,7 +37,7 @@ for(ttype in table_types) {
     
     # extract from tables below where: XRace == "Total" 
     count_reg2 <- psrc_pums_count(dl, 
-                                  group_vars=c("rent_burden",var), 
+                                  group_vars=c("rent_burden", var), 
                                   incl_na=FALSE, 
                                   rr=TRUE) %>%
       filter(rent_burden == "cost-burdened") 
