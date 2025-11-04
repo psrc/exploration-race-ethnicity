@@ -1,0 +1,49 @@
+---
+title: "Race & Ethnicity"
+output: 
+  html_document:
+    css: style.css
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE, fig.width = 19, fig.height = 7)
+
+source(here::here("visuals/create-plots.R"))
+```
+
+# {.tabset} 
+
+## Ownership Rate
+
+### {.tabset}
+
+#### Count
+
+```{r hhcount count}
+
+hhc_re <- create_plots("ownership_rate", 1, "count")
+
+hhc_re_hhsize <- create_plots("ownership_rate", 2, "count")
+
+iwalk(hhc_re$plots, ~print(.x))
+
+iwalk(hhc_re_hhsize$plots, ~print(.x))
+
+```
+
+#### Shares
+
+```{r hhcount share}
+
+hhs_re <- create_plots("ownership_rate", 1, "share")
+
+hhs_re_hhsize <- create_plots("ownership_rate", 2, "share")
+
+iwalk(hhs_re$plots, ~print(.x))
+
+iwalk(hhs_re_hhsize$plots, ~print(.x))
+
+```
+
+
+
