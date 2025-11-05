@@ -19,14 +19,30 @@ source(here::here("visuals/create-plots.R"))
 
 #### Median
 
-```{r hhcount count}
+```{r median income}
 
 hhc_re <- create_plots("median-income", 1, "median")
 
-hhc_re_hhsize <- create_plots("median-income", 2, "median")
-
 iwalk(hhc_re$plots, ~print(.x))
 
+```
+
+#### Median by Household Size
+
+```{r hh size}
+
+hhc_re_hhsize <- create_plots("median-income", 2, "median")
+
 iwalk(hhc_re_hhsize$plots, ~print(.x))
+
+```
+
+#### Median by Tenure
+
+```{r hh tenure}
+
+hhs_re_tenure <- create_plots("median-income", 3, "median")
+
+iwalk(hhs_re_tenure$plots, ~print(.x))
 
 ```
