@@ -39,6 +39,7 @@ for (ttype in table_types) {
                   names_from = "race_type",
                   names_glue = "{race_type}_{.value}",
                   values_from = c("count", "share", "count_moe", "share_moe", "reliability"))|>
+      mutate(HH_SIZE = "all households") |>
       arrange(COUNTY)
 
     all_dfs[[paste(ttype, sep = "_")]] <- df_rel

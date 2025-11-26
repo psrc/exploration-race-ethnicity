@@ -40,6 +40,7 @@ for (ttype in table_types) {
                   names_from = "race_type",
                   names_glue = "{race_type}_{.value}",
                   values_from = c("count", "share", "count_moe", "share_moe", "reliability"))|>
+      mutate(HH_SIZE = s) |>
       arrange(COUNTY)
     
     s_abbr <- switch(s, "single-person" = "sp", "multi-person" = "mp")
