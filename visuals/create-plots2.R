@@ -12,7 +12,7 @@ library(showtext)
 library(psrcplot)
 library(here)
 
-source(here::here('visuals/function-plot.R'))
+source(here::here('visuals/function-facets.R'))
 
 create_plots <- function(indicator, vars_options = c(1, 2, 3), ind_value = c("share", "count", "median")) {
   
@@ -43,41 +43,60 @@ create_plots <- function(indicator, vars_options = c(1, 2, 3), ind_value = c("sh
   }
   
   for(t in tab_names) {
+    
+    if(t == "detail") {
+      re_order <- c(11,15,18,16,13,1,2,3,4,9,10,19,17,5,6,7,8,14,12)
+      gtot <- re_order[1:5]
+      mtot <- tail(re_order, 6)
+    } else if (t == "dichot") {
+      re_order <- c(9, 13, 16, 14, 11, 1, 2, 3, 4, 7, 8, 17, 15, 5, 6, 12, 10)
+      gtot <- re_order[1:5]
+      mtot <- tail(re_order, 4)
+    }
+    
     df <- read.xlsx(here::here("visuals", datafile), sheet = t)
     
     r <- df |> 
       filter(COUNTY == "Region") |> 
-      select(RACE, ends_with(c("share", "count"))) 
+      select(ID, RACE, ends_with(c("share", "count"))) 
     
     r <- df |> 
       filter(COUNTY == "Region") |> 
-      select(RACE, ends_with(ind_value), ends_with(paste0(ind_value, "_moe"))) 
+      select(ID, RACE, ends_with(ind_value), ends_with(paste0(ind_value, "_moe"))) 
     
-    races_ord <- r$RACE
-
+    races_ord <- paste0(r$ID, "_", r$RACE)
+    
+    if(t == "dichot") browser()
+    
     df_long <- r |>
-      pivot_longer(cols = -RACE,
+      mutate(race_id = paste0(ID, "_", RACE)) |> 
+      pivot_longer(cols = setdiff(colnames(r),c("ID", "RACE", "race_id")),
                    names_to = "variable",
                    values_to = "value"
-      ) |>
+      ) |> 
       mutate(
         # Create median/moe indicator
         type = if_else(str_detect(variable, "_moe$"), "moe", ind_value),
-
+        
         # Clean variable to just the description
         description = str_remove(variable, "_moe$"),
         description = str_trim(str_replace(description, paste0("_", ind_value), "")),
         description = str_replace(description, "_?HINCP_?", "")
       ) |>
-      select(RACE, description, type, value) |>
+      select(race_id, ID, RACE, description, type, value) |>
       pivot_wider(names_from = type,
                   values_from = value
       ) |>
       mutate(upper = !!sym(ind_value) + moe,
              lower = !!sym(ind_value) - moe) |>
       mutate(description = factor(description, levels = c("PRACE", "ARACE", "HRACE")),
-             RACE = factor(RACE, levels = races_ord)) |>
-      arrange(RACE, description)
+             RACE2 = factor(race_id, levels = races_ord)) |>
+      arrange(RACE2, description) |> 
+      mutate(facets = case_when(ID %in% gtot ~ "Grand Totals",
+                                ID %in% setdiff(unique(r$ID), c(gtot, mtot)) ~ "Alone",
+                                ID %in% mtot ~ "Multirace")) |> 
+      mutate(facets = factor(facets, levels = c("Grand Totals", "Alone", "Multirace")),
+             RACE = factor(RACE, levels = unique(.data[['RACE']])))
     
     all_tables[[t]] <- df_long
 
@@ -98,7 +117,7 @@ create_plots <- function(indicator, vars_options = c(1, 2, 3), ind_value = c("sh
       str_to_title()
     
     sub <- str_squish(paste0(subtitle_name, plot_name))
-    all_plots[[t]] <- create_bar_chart(df = df_long, title = ind, subtitle = sub)
+    all_plots[[t]] <- create_facet_chart(df = df_long, title = ind, subtitle = sub, x_val = "RACE")
   }
   
  return(list(tables = all_tables, plots = all_plots))
