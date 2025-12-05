@@ -12,12 +12,12 @@ table_types <- c("detail", "dichot", "single")
 
 # functions ----
 
-cat_multirace <- function(df, race_col, x) {
-  newcol <- paste0(x, "cat_multi")
-  df |> mutate({{newcol}} := ifelse(str_detect(.data[[race_col]], "^Multi.*"), "Multirace", "Not Multirace"))
-}
+# cat_multirace <- function(df, race_col, x) {
+#   newcol <- paste0(x, "cat_multi")
+#   df |> mutate({{newcol}} := ifelse(str_detect(.data[[race_col]], "^Multi.*"), "Multirace", "Not Multirace"))
+# }
 
-cat_multiple_race <- function(df, race_col, x) {
+cat_multirace <- function(df, race_col, x) {
   newcol <- paste0(x, "cat_multiple")
   df |> mutate({{newcol}} := ifelse(str_detect(.data[[race_col]], "^Multi.*|^Two.*"), "Multiple Races", "Not Multiple Races"))
 }
