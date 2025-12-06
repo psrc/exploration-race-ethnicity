@@ -12,12 +12,12 @@ paths <- file.path(library_loc, c("psrccensus_mrdetail", "psrccensus_mrdichot"))
 walk(paths, ~dir.create(.x))
 
 install_github("psrc/psrccensus", 
-               ref = "multiracial_detail",
-               lib = paths[1],
-               force = TRUE)
+                        ref = "multiracial_detail",
+                        lib = paths[1],
+                        force = TRUE)
 
 install_github("psrc/psrccensus", 
-               ref = "multiracial_dichotomy",
-               lib = paths[2],
-               force = TRUE)
+                        ref = "multiracial_dichotomy",
+                        lib = paths[2],
+                        force = TRUE)
 
