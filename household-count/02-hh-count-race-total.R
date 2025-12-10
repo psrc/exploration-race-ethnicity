@@ -13,22 +13,22 @@ table_types <- c("detail", "dichot", "single")
 # functions ----
 # aggregating summary total rows, differentiating between Harvard and PSRC methods of grouping r/e categories
 cat_multirace_psrc <- function(df, race_col, x) {
-  newcol <- paste0(x, "cat_multirace")
+  newcol <- paste0(x, "cat_multirace_psrc")
   df |> mutate({{newcol}} := ifelse(str_detect(.data[[race_col]], "^Multirace*|^MNAW*|^Two.*"), "Multirace PSRC", "Not Multirace PSRC"))
 }
 
 cat_single_race_psrc <- function(df, race_col, x) {
-  newcol <- paste0(x, "cat_single")
+  newcol <- paste0(x, "cat_single_race_psrc")
   df |> mutate({{newcol}} := ifelse(str_detect(.data[[race_col]], "^Multirace*|^MNAW*|^Two.*"), "Not single race PSRC", "Single race PSRC"))
 }
 
 cat_multirace_harvard <- function(df, race_col, x) {
-  newcol <- paste0(x, "cat_multirace")
+  newcol <- paste0(x, "cat_multirace_harvard")
   df |> mutate({{newcol}} := ifelse(str_detect(.data[[race_col]], "^Multirace*|^MNAW*"), "Multirace Harvard", "Not Multirace Harvard"))
 }
 
 cat_single_race_harvard <- function(df, race_col, x) {
-  newcol <- paste0(x, "cat_single")
+  newcol <- paste0(x, "cat_single_race_harvard")
   df |> mutate({{newcol}} := ifelse(str_detect(.data[[race_col]], "^Multirace*|^MNAW*"), "Not single race Harvard", "Single race Harvard"))
 }
 
@@ -46,9 +46,9 @@ create_total_counts <- function(raw_pums) {
   dl <- reduce2(race_vars, list("p", "a", "h"), cat_single_race_harvard, .init = dl)
   dl <- reduce2(race_vars, list("p", "a", "h"), cat_poc, .init = dl)
   
-  group_vars <- str_subset(colnames(dl$variables), ".*t_.*")
+  group_vars <- str_subset(colnames(dl$variables), ".*cat_.*")
   
-  # calc medians
+  # calc
   main_df <- NULL
   for(var in group_vars) {
     count_reg <- psrc_pums_count(dl, 
@@ -71,8 +71,8 @@ create_total_counts <- function(raw_pums) {
       filter(!(.data[[var]] %in% cats))
     
     # extract identifiers (race column type)
-    rt <- str_extract(var, "^.*(?=_)")
-    rt_name <- switch(rt, "acat" = "ARACE", "pcat" = "PRACE", "hcat" = "HRACE")
+    rt <- substr(var, 1, 1)
+    rt_name <- c(p = "PRACE", a = "ARACE", h = "HRACE")[rt]
     
     # assemble and rename var to generic colnames and add new column to identify type of raw table
     rs <- bind_rows(count_reg, count_cnty) |>
