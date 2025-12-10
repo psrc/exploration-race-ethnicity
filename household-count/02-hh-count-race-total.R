@@ -102,4 +102,3 @@ all_dfs <- all_dfs |>
   mutate(race = paste("Total", race))
 
 saveRDS(all_dfs, "household-count/data/total-counts-df.rds")
-# readRDS("household-count/data/total-counts-df.rds")
