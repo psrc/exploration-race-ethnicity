@@ -52,6 +52,9 @@ create_plots <- function(indicator, vars_options = c(1, 2, 3), ind_value = c("sh
       re_order <- c(9, 13, 16, 14, 11, 1, 2, 3, 4, 7, 8, 17, 15, 5, 6, 12, 10)
       gtot <- re_order[1:5]
       mtot <- tail(re_order, 4)
+    } else if (t == "single") {
+      re_order <- c(8,12,15,13,10,1,2,3,4,6,7,16,14,5,11, 9)
+      
     }
     
     df <- read.xlsx(here::here("visuals", datafile), sheet = t)
