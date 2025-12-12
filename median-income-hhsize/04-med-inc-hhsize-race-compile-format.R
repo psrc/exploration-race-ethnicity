@@ -7,10 +7,7 @@ library(openxlsx)
 race_vars <- c("PRACE", "ARACE", "HRACE")
 table_types <- c("detail", "dichot", "single")
 
-# file_names <- c("non-total-counts-df-singleperson.rds", "total-counts-df-singleperson.rds")
-# file_names <- c("non-total-counts-df-multiperson.rds","total-counts-df-multiperson.rds")
 file_names <- c("non-total-counts-df.rds","total-counts-df.rds")
-
 
 # compile into one df ----
 

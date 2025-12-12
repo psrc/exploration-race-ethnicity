@@ -7,22 +7,19 @@ library(writexl)
 library(here)
 
 # Variables
-excel_file_path <- 'household-size/data' #folder path
-indicator_file <- 'household-count-by-re-hhsize.xlsx' # Excel file name
+excel_file_path <- 'ownership-rate/data' #folder path
+indicator_file <- 'ownership-rate-by-re.xlsx' # Excel file name
 
 # Order for visuals ----
 county_order <- c('Region', 'King', 'Kitsap', 'Pierce', 'Snohomish')
 
-# ---- CONFIGURATION #2 ---- no order required because dealt with in visualization script
-# Variables
-excel_file_path <- 'household-size/data' #folder path
-indicator_file <- 'household-count-by-re-hhsize.xlsx' # Excel file name
+# ---- CONFIGURATION ----
 
 # Path to your Excel file
 file_path <- file.path(here(), excel_file_path, indicator_file)
 
 # Path to output location
-output_path <- file.path(here(),'intermediate/test')
+output_path <- file.path(here(),'visuals')
 
 # Processing function
 organize_data <- function(df) {
@@ -49,7 +46,7 @@ organize_data <- function(df) {
   # Organize data based on county - for ease of checking
   df_final <- df_all %>% 
     arrange(match(COUNTY, county_order))
-  
+
 }
 
 try({  

@@ -11,36 +11,42 @@ race_vars <- c("PRACE", "ARACE", "HRACE")
 table_types <- c("detail", "dichot", "single")
 
 # functions ----
-
-cat_multirace <- function(df, race_col, x) {
-  newcol <- paste0(x, "cat_multi")
-  df |> mutate({{newcol}} := ifelse(str_detect(.data[[race_col]], "^Multi.*"), "Multirace", "Not Multirace"))
+# aggregating summary total rows, differentiating between Harvard and PSRC methods of grouping r/e categories
+cat_multirace_psrc <- function(df, race_col, x) {
+  newcol <- paste0(x, "cat_multirace_psrc")
+  df |> mutate({{newcol}} := ifelse(str_detect(.data[[race_col]], "^Multirace*|^MNAW*|^Two.*"), "Multirace PSRC", "Not Multirace PSRC"))
 }
 
-cat_multiple_race <- function(df, race_col, x) {
-  newcol <- paste0(x, "cat_multiple")
-  df |> mutate({{newcol}} := ifelse(str_detect(.data[[race_col]], "^Multi.*|^Two.*"), "Multiple Races", "Not Multiple Races"))
+cat_single_race_psrc <- function(df, race_col, x) {
+  newcol <- paste0(x, "cat_single_race_psrc")
+  df |> mutate({{newcol}} := ifelse(str_detect(.data[[race_col]], "^Multirace*|^MNAW*|^Two.*"), "Not single race PSRC", "Single race PSRC"))
+}
+
+cat_multirace_harvard <- function(df, race_col, x) {
+  newcol <- paste0(x, "cat_multirace_harvard")
+  df |> mutate({{newcol}} := ifelse(str_detect(.data[[race_col]], "^Multirace*|^MNAW*"), "Multirace Harvard", "Not Multirace Harvard"))
+}
+
+cat_single_race_harvard <- function(df, race_col, x) {
+  newcol <- paste0(x, "cat_single_race_harvard")
+  df |> mutate({{newcol}} := ifelse(str_detect(.data[[race_col]], "^Multirace*|^MNAW*"), "Not single race Harvard", "Single race Harvard"))
 }
 
 cat_poc <- function(df, race_col, x) {
   newcol <- paste0(x, "cat_poc")
-  df |> mutate({{newcol}} := ifelse(!(.data[[race_col]] %in% c("Total", "White alone", NA)), "People of Color", "Not People of Color"))
-}
-
-cat_single_race <- function(df, race_col, x) {
-  newcol <- paste0(x, "cat_single")
-  df |> mutate({{newcol}} := ifelse(str_detect(.data[[race_col]], "^Multi.*"), "Not single-race", "Single-race"))
+  df |> mutate({{newcol}} := ifelse(!c(.data[[race_col]] %in% c("Total", "White", NA)), "People of color", "Not People of Color"))
 }
 
 create_total_counts <- function(raw_pums) {
   
   # add labeling columns
-  dl <- reduce2(race_vars, list("p", "a", "h"), cat_multirace, .init = raw_pums)
-  dl <- reduce2(race_vars, list("p", "a", "h"), cat_multiple_race, .init = dl)
+  dl <- reduce2(race_vars, list("p", "a", "h"), cat_multirace_psrc, .init = raw_pums)
+  dl <- reduce2(race_vars, list("p", "a", "h"), cat_single_race_psrc, .init = dl)
+  dl <- reduce2(race_vars, list("p", "a", "h"), cat_multirace_harvard, .init = dl)
+  dl <- reduce2(race_vars, list("p", "a", "h"), cat_single_race_harvard, .init = dl)
   dl <- reduce2(race_vars, list("p", "a", "h"), cat_poc, .init = dl)
-  dl <- reduce2(race_vars, list("p", "a", "h"), cat_single_race, .init = dl)
   
-  group_vars <- str_subset(colnames(dl$variables), ".*t_.*")
+  group_vars <- str_subset(colnames(dl$variables), ".*cat_.*")
   
   # calc counts
   main_df <- NULL
@@ -68,8 +74,8 @@ create_total_counts <- function(raw_pums) {
       filter(!(.data[[var]] %in% cats))
     
     # extract identifiers (race column type)
-    rt <- str_extract(var, "^.*(?=_)")
-    rt_name <- switch(rt, "acat" = "ARACE", "pcat" = "PRACE", "hcat" = "HRACE")
+    rt <- substr(var, 1, 1)
+    rt_name <- c(p = "PRACE", a = "ARACE", h = "HRACE")[rt]
     
     # assemble and rename var to generic colnames and add new column to identify type of raw table
     rs <- bind_rows(count_reg, count_cnty) |>
