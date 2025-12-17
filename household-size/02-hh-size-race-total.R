@@ -99,6 +99,8 @@ all_dfs <- map2(list(pums_raw_hh_mrdetail,
 all_dfs <- reduce(all_dfs, bind_rows)
 
 all_dfs <- all_dfs |> 
-  mutate(race = paste("Total", race))
+  mutate(race = paste(#"Total", 
+                      race))
 
 saveRDS(all_dfs, "household-size/data/total-counts-df.rds")
+# readRDS("household-size/data/total-counts-df.rds") #to check data
