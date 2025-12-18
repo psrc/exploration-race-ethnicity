@@ -25,28 +25,52 @@ output_path <- file.path(here(),'visuals')
 organize_data <- function(df) {
   
   # Replicate rows for visualization
+  df_total <- df %>% 
+    filter(RACE == "Total") %>% #replicate row with total 
+    slice(rep(1:n(), each = 3)) %>% 
+    rbind(df) #bind to original data
+  
   df_white <- df %>% 
-    filter(RACE == "White alone") %>% #replicate row with white 
-    rbind(df) #bind to original data 
+    filter(RACE == "White") %>% #replicate row with white 
+    rbind(df_total) #bind to original data 
   
   df_multirace <- df %>%   
-    filter(RACE=="Total Multirace") %>% #replicate row with total multirace 
+    filter(RACE=="Multirace PSRC") %>% #replicate row with total multirace psrc
+    slice(rep(1:n(), each = 2)) %>% 
     rbind(df_white)
   
+  df_singlerace <- df %>%   
+    filter(RACE=="Single race PSRC") %>% #replicate row with total single race psrc 
+    rbind(df_multirace)
+  
+  df_twoormore <- df %>%   
+    filter(RACE=="Two or More Races") %>% #replicate row with two or more races 
+    rbind(df_singlerace)
+  
+  
   # Create unique ID
-  df_all <- df_multirace %>%
+  df_all <- df_twoormore %>%
     arrange(match(COUNTY, county_order),
             RACE) %>% 
     group_by(COUNTY) %>%
     dplyr::mutate(ID = row_number())
   
-  # Rename Total row for visuals
-  df_all$RACE[df_all$RACE=='Total'] <- 'Grand Total'
+  # Rename 'MNAW' row for visuals
+  df_all$RACE[df_all$RACE=='MNAW'] <- 'Multirace not incl. Asian & white'
+  
+  # Rename 'MNW' row for visuals
+  df_all$RACE[df_all$RACE=='MNW'] <- 'Multirace not incl. white'
+  
+  # Rename 'Multirace incl. Asian, white' row for visuals
+  df_all$RACE[df_all$RACE=='Multirace incl. Asian, white'] <- 'Multirace incl. Asian & white'
+  
+  # Rename 'Total' row for visuals
+  df_all$RACE[df_all$RACE=='Total'] <- 'Region'
   
   # Organize data based on county - for ease of checking
   df_final <- df_all %>% 
     arrange(match(COUNTY, county_order))
-
+  
 }
 
 try({  
