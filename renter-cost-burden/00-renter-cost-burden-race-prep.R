@@ -5,8 +5,14 @@
 
 library(remotes)
 library(purrr)
+library(here)
 
-library_loc <- "C:/Users/eclute/AppData/Local/R/win-library/4.4"
+# Go up three directory levels
+user_dir <- dirname(dirname(dirname(here())))
+
+library_loc <- file.path(user_dir, "AppData/Local/R/win-library/4.4")
+# library_loc <- "C:/Users/mrichards/AppData/Local/R/win-library/4.4"
+# library_loc <- "C:/Users/eclute/AppData/Local/R/win-library/4.4"
 
 paths <- file.path(library_loc, c("psrccensus_mrdetail", "psrccensus_mrdichot"))
 walk(paths, ~dir.create(.x))
