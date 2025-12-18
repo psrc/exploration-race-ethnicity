@@ -73,4 +73,4 @@ for(ttype in table_types) {
 
 saveRDS(main_df, "ownership-rate/data/non-total-count-df.rds")
 
-readRDS("ownership-rate/data/non-total-count-df.rds")
+# readRDS("ownership-rate/data/non-total-count-df.rds")
