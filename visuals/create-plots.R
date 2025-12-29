@@ -11,8 +11,10 @@ library(scales)
 library(showtext)
 library(psrcplot)
 library(here)
+library(readxl)
 
-source(here::here('visuals/function-plot.R'))
+source(here::here('visuals/function-facets.R'))
+# source(here::here('visuals/function-plot.R'))
 
 create_plots <- function(indicator, vars_options = c(1, 2, 3), ind_value = c("share", "count", "median")) {
   
@@ -24,7 +26,7 @@ create_plots <- function(indicator, vars_options = c(1, 2, 3), ind_value = c("sh
   vars <- c("-by-re.xlsx", "-by-re-hhsize.xlsx", "-by-re-hhsize-tenure.xlsx")
   
   e <- data.frame(first = c("detail", "dichot"), second = c("mp", "sp"), third = c("own", "rent"))
-  
+
   df_e <- expand.grid(e) |> 
     mutate(vo2 = paste(first, second, sep = "_")) |> 
     mutate(vo3 = paste(first, second, third, sep = "_"))
@@ -42,45 +44,89 @@ create_plots <- function(indicator, vars_options = c(1, 2, 3), ind_value = c("sh
     tab_names <- unique(df_e$vo3)
   }
   
+  label_lu <- read_excel("T:\\60day-TEMP\\christy\\explore-race\\label-lookup.xlsx", sheet = 1)
+
   for(t in tab_names) {
-    df <- read.xlsx(here::here("visuals", datafile), sheet = t)
+
+    # where to place Harvard and PSRC totals?
+    # include single_mp?
+
+    if(str_ends(t, "_sp")) { #detail_sp, dichot_sp, and single_sp
+      cols <- c("all_sp", "all_sp_cat")
+    } else { 
+      cols <- c(t, paste0(t, "_cat"))
+    }
+    
+    llu <- label_lu |> 
+      select(all_of(cols)) |> 
+      rename(all_of(setNames(cols, c("order", "facet"))))
+    
+    df <- read_excel(here::here("visuals", datafile), sheet = t)
     
     r <- df |> 
       filter(COUNTY == "Region") |> 
-      select(RACE, ends_with(c("share", "count"))) 
-    
-    r <- df |> 
-      filter(COUNTY == "Region") |> 
-      select(RACE, ends_with(ind_value), ends_with(paste0(ind_value, "_moe"))) 
-    
-    races_ord <- r$RACE
-    
+      mutate(order = paste(RACE, ID)) |> 
+      left_join(llu, by = "order") |> 
+      select(order, facet, ID, RACE, ends_with(ind_value), ends_with(paste0(ind_value, "_moe"))) 
+    # browser()
     df_long <- r |>
-      pivot_longer(cols = -RACE,
+      pivot_longer(cols = setdiff(colnames(r),c("ID", "RACE", "order", "facet")),
                    names_to = "variable",
                    values_to = "value"
-      ) |>
+      ) |> 
       mutate(
         # Create median/moe indicator
         type = if_else(str_detect(variable, "_moe$"), "moe", ind_value),
-
+        
         # Clean variable to just the description
         description = str_remove(variable, "_moe$"),
         description = str_trim(str_replace(description, paste0("_", ind_value), "")),
         description = str_replace(description, "_?HINCP_?", "")
       ) |>
-      select(RACE, description, type, value) |>
+      select(order, facet, ID, RACE, description, type, value) |>
       pivot_wider(names_from = type,
                   values_from = value
       ) |>
       mutate(upper = !!sym(ind_value) + moe,
              lower = !!sym(ind_value) - moe) |>
       mutate(description = factor(description, levels = c("PRACE", "ARACE", "HRACE")),
-             RACE = factor(RACE, levels = races_ord)) |>
-      arrange(RACE, description)
+             order = factor(order, levels = llu$order)
+             ) |>
+      arrange(order, description) |> 
+      mutate(facet = factor(facet, levels = c("Totals", "Alone", "Multirace", "Other"))) |> 
+      mutate(RACE = factor(RACE, levels = unique(.data[['RACE']])))
     
     all_tables[[t]] <- df_long
-
+    # browser()
+    ###test
+    # test_df <- all_tables$detail_mp |> 
+    #   filter(facet == 'Other')
+    # val_colname <- 'count'
+    # p <- ggplot() +
+    #   geom_col(data = test_df, aes(y = order, x = count, fill = description),
+    #            position = position_dodge(width = 0.9)) +
+    #   geom_linerange(data = test_df, aes(y = order, xmin = lower, xmax = upper, group = description),
+    #                  position = position_dodge(0.9)
+    #   ) +
+    #   scale_y_discrete(labels = label_wrap(width = 20)) +
+    #   scale_fill_discrete(palette = psrc_colors$pognbgy_5, name = str_to_title(val_colname)) +
+    #   theme(axis.text.y = element_text(size = 17, lineheight = .5, vjust = .5),
+    #         axis.text.x = element_text(size = 17),
+    #         axis.ticks.x = element_blank(),
+    #         axis.ticks.y = element_blank(),
+    #         text = element_text(family = "Poppins"),
+    #         panel.grid.minor = element_blank(),
+    #         panel.grid.major.x = element_line(color = "lightgrey", linetype = "solid", size = 0.5),
+    #         panel.background = element_blank(),
+    #         legend.position = "bottom",
+    #         legend.text = element_text(size = 20),
+    #         legend.title = element_text(size = 20),
+    #         legend.key.size = unit(.75, "cm"),
+    #         legend.spacing = unit(1, "cm")
+    #   )
+    
+    ###end test
+    
     plot_name <- str_replace_all(vars[vars_options], "-", " ") |> 
       str_replace_all(".xlsx", "") |> 
       str_replace_all("\\sre", " Race and Ethnicity") |> 
@@ -98,7 +144,9 @@ create_plots <- function(indicator, vars_options = c(1, 2, 3), ind_value = c("sh
       str_to_title()
     
     sub <- str_squish(paste0(subtitle_name, plot_name))
-    all_plots[[t]] <- create_bar_chart(df = df_long, title = ind, subtitle = sub)
+    # all_plots[[t]] <- create_facet_chart(df = df_long, title = ind, subtitle = sub, x_val = "RACE")
+    # all_plots[[t]] <- create_facet_bar_chart(df = df_long, title = ind, subtitle = sub, x_val = "RACE") #Test bar
+    all_plots[[t]] <- create_facet_bar_chart(df = df_long, title = ind, subtitle = sub, x_val = "order") #Test bar
   }
   
  return(list(tables = all_tables, plots = all_plots))
@@ -108,3 +156,6 @@ create_plots <- function(indicator, vars_options = c(1, 2, 3), ind_value = c("sh
 # test <- create_plots("household-count", 1, "count")
 # test2 <- create_plots("household-count", 2, "share")
 # test3 <- create_plots("median-income", 3, "median")
+# hhs_re <- create_plots("household-count", 2, "count")
+# hhs_re_s <- create_plots("household-count", 1, "share")
+# hhs_re_hhsize_s <- create_plots("household-count", 2, "share")
