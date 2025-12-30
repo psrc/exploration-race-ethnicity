@@ -29,12 +29,11 @@ create_facet_chart <- function(df, title, subtitle, x_val) {
   p <- ggplot() +
     geom_col(data = df, aes(x = .data[[x_val]], y = .data[[val_colname]], fill = description),
              position = position_dodge(width = 0.9)) +
-    geom_linerange(data = df, aes(x = RACE, ymin = lower, ymax = upper, group = description),
+    geom_linerange(data = df, aes(x = .data[[x_val]], ymin = lower, ymax = upper, group = description),
                    position = position_dodge(0.9)) +
     plot_scale +
     coord_cartesian(ylim = cc_lim) +
     scale_x_discrete(labels = label_wrap(width = 20)) +
-    # scale_x_discrete(labels = label_wrap(width = 15)) +
     scale_fill_discrete(palette = psrc_colors$pognbgy_5, name = str_to_title(val_colname)) +
     labs(title = title,
          subtitle = subtitle,
@@ -72,6 +71,12 @@ create_facet_bar_chart <- function(df, title, subtitle, x_val) {
 
   df <- df |> 
     mutate({{val_colname}} := replace_na(.data[[val_colname]], 0))
+
+  # create named vector to replace original y axis labels
+  name_vec <- df |> 
+    select(order, RACE) |> 
+    mutate_at(c("order", "RACE"), as.character) |> 
+    deframe()
   
   if(val_colname == 'share') {
     cc_lim <- c(0,1)
@@ -90,7 +95,7 @@ create_facet_bar_chart <- function(df, title, subtitle, x_val) {
                    ) +
     plot_scale +
     coord_cartesian(xlim = cc_lim) +
-    scale_y_discrete(labels = label_wrap(width = 20)) +
+    scale_y_discrete(labels = c(name_vec, label_wrap(width = 20))) +
     scale_fill_discrete(palette = psrc_colors$pognbgy_5, name = str_to_title(val_colname)) +
     labs(title = title,
          subtitle = subtitle,

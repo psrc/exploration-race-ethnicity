@@ -97,35 +97,6 @@ create_plots <- function(indicator, vars_options = c(1, 2, 3), ind_value = c("sh
       mutate(RACE = factor(RACE, levels = unique(.data[['RACE']])))
     
     all_tables[[t]] <- df_long
-    # browser()
-    ###test
-    # test_df <- all_tables$detail_mp |> 
-    #   filter(facet == 'Other')
-    # val_colname <- 'count'
-    # p <- ggplot() +
-    #   geom_col(data = test_df, aes(y = order, x = count, fill = description),
-    #            position = position_dodge(width = 0.9)) +
-    #   geom_linerange(data = test_df, aes(y = order, xmin = lower, xmax = upper, group = description),
-    #                  position = position_dodge(0.9)
-    #   ) +
-    #   scale_y_discrete(labels = label_wrap(width = 20)) +
-    #   scale_fill_discrete(palette = psrc_colors$pognbgy_5, name = str_to_title(val_colname)) +
-    #   theme(axis.text.y = element_text(size = 17, lineheight = .5, vjust = .5),
-    #         axis.text.x = element_text(size = 17),
-    #         axis.ticks.x = element_blank(),
-    #         axis.ticks.y = element_blank(),
-    #         text = element_text(family = "Poppins"),
-    #         panel.grid.minor = element_blank(),
-    #         panel.grid.major.x = element_line(color = "lightgrey", linetype = "solid", size = 0.5),
-    #         panel.background = element_blank(),
-    #         legend.position = "bottom",
-    #         legend.text = element_text(size = 20),
-    #         legend.title = element_text(size = 20),
-    #         legend.key.size = unit(.75, "cm"),
-    #         legend.spacing = unit(1, "cm")
-    #   )
-    
-    ###end test
     
     plot_name <- str_replace_all(vars[vars_options], "-", " ") |> 
       str_replace_all(".xlsx", "") |> 
@@ -145,7 +116,6 @@ create_plots <- function(indicator, vars_options = c(1, 2, 3), ind_value = c("sh
     
     sub <- str_squish(paste0(subtitle_name, plot_name))
     # all_plots[[t]] <- create_facet_chart(df = df_long, title = ind, subtitle = sub, x_val = "RACE")
-    # all_plots[[t]] <- create_facet_bar_chart(df = df_long, title = ind, subtitle = sub, x_val = "RACE") #Test bar
     all_plots[[t]] <- create_facet_bar_chart(df = df_long, title = ind, subtitle = sub, x_val = "order") #Test bar
   }
   
