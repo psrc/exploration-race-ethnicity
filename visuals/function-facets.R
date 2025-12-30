@@ -96,7 +96,8 @@ create_facet_bar_chart <- function(df, title, subtitle, x_val) {
     plot_scale +
     coord_cartesian(xlim = cc_lim) +
     scale_y_discrete(labels = c(name_vec, label_wrap(width = 20))) +
-    scale_fill_discrete(palette = psrc_colors$pognbgy_5, name = str_to_title(val_colname)) +
+    scale_fill_discrete(palette = psrc_colors$pognbgy_5, name = str_to_title(val_colname), 
+                        guide = guide_legend(reverse = TRUE)) +
     labs(title = title,
          subtitle = subtitle,
          x = NULL,

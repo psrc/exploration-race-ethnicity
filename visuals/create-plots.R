@@ -68,7 +68,7 @@ create_plots <- function(indicator, vars_options = c(1, 2, 3), ind_value = c("sh
       mutate(order = paste(RACE, ID)) |> 
       left_join(llu, by = "order") |> 
       select(order, facet, ID, RACE, ends_with(ind_value), ends_with(paste0(ind_value, "_moe"))) 
-    # browser()
+
     df_long <- r |>
       pivot_longer(cols = setdiff(colnames(r),c("ID", "RACE", "order", "facet")),
                    names_to = "variable",
