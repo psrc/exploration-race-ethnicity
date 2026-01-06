@@ -83,7 +83,8 @@ create_facet_bar_chart <- function(df, title, subtitle, x_val) {
     plot_scale <- scale_x_continuous(labels = percent, expand = c(0,0))
   } else {
     max_val <- max(df[[val_colname]])
-    cc_lim <- c(0, ceiling(max_val) + 100000)
+    # cc_lim <- c(0, ceiling(max_val) + 10000) #rentercostburden
+    cc_lim <- c(0, ceiling(max_val) + 100000) #hhcount ownershiprate
     plot_scale <-scale_x_continuous(labels = comma, expand = c(0,0))
   }
   
@@ -120,12 +121,12 @@ create_facet_bar_chart <- function(df, title, subtitle, x_val) {
     )
   
   p_f <- p +
-    facet_wrap(vars(facet), scales = "free_y") +
+    facet_wrap(vars(facet), scales = "free") +
     theme(strip.text.x = element_text(size = 25, face = "bold"),
           strip.background = element_blank(),
           strip.text = element_text(margin = margin(b = 10, unit = "pt")),
           panel.spacing = unit(.5, "cm"),
-          plot.margin = margin(10, 0, 0, 0, "pt"))
+          plot.margin = margin(10, 20, 0, 0, "pt"))
   
   p_f
 }

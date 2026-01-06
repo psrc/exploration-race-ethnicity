@@ -43,17 +43,19 @@ create_plots <- function(indicator, vars_options = c(1, 2, 3), ind_value = c("sh
   } else if(vars_options == 3) {
     tab_names <- unique(df_e$vo3)
   }
-  
+
   label_lu <- read_excel("T:\\60day-TEMP\\christy\\explore-race\\label-lookup.xlsx", sheet = 1)
 
   for(t in tab_names) {
-
     # where to place Harvard and PSRC totals?
     # include single_mp?
-
-    if(str_ends(t, "_sp")) { #detail_sp, dichot_sp, and single_sp
+    
+    if(str_ends(t, "_sp") | str_ends(t, "_sp_.*")) { #detail_sp, dichot_sp, and single_sp
       cols <- c("all_sp", "all_sp_cat")
-    } else { 
+    } else if (vars_options == 3 & !str_ends(t, "_sp")){
+      w <- str_extract(t, ".*(?=_(own|rent))") # remove _own or _rent
+      cols <- c(w, paste0(w, "_cat"))
+    } else {
       cols <- c(t, paste0(t, "_cat"))
     }
     
@@ -95,7 +97,7 @@ create_plots <- function(indicator, vars_options = c(1, 2, 3), ind_value = c("sh
       arrange(order, description) |> 
       mutate(facet = factor(facet, levels = c("Totals", "Alone", "Multirace", "Other"))) |> 
       mutate(RACE = factor(RACE, levels = unique(.data[['RACE']])))
-    
+
     all_tables[[t]] <- df_long
     
     plot_name <- str_replace_all(vars[vars_options], "-", " ") |> 
@@ -124,7 +126,10 @@ create_plots <- function(indicator, vars_options = c(1, 2, 3), ind_value = c("sh
 
 
 # test <- create_plots("household-count", 1, "count")
+# test <- create_plots("renter-cost-burden", 1, "count")
 # test2 <- create_plots("household-count", 2, "share")
+# test1 <- create_plots("median-income", 1, "median")
+# test2 <- create_plots("median-income", 2, "median")
 # test3 <- create_plots("median-income", 3, "median")
 # hhs_re <- create_plots("household-count", 2, "count")
 # hhs_re_s <- create_plots("household-count", 1, "share")
