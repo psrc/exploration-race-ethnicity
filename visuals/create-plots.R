@@ -71,6 +71,12 @@ create_plots <- function(indicator, vars_options = c(1, 2, 3), ind_value = c("sh
       left_join(llu, by = "order") |> 
       select(order, facet, ID, RACE, ends_with(ind_value), ends_with(paste0(ind_value, "_moe"))) 
 
+    if(indicator == "median-income") {
+      facet_levels <- c("Region", "Alone", "Multirace", "Other")
+    } else {
+      facet_levels <- c("Totals", "Alone", "Multirace", "Other")
+    }
+    
     df_long <- r |>
       pivot_longer(cols = setdiff(colnames(r),c("ID", "RACE", "order", "facet")),
                    names_to = "variable",
@@ -95,9 +101,18 @@ create_plots <- function(indicator, vars_options = c(1, 2, 3), ind_value = c("sh
              order = factor(order, levels = llu$order)
              ) |>
       arrange(order, description) |> 
-      mutate(facet = factor(facet, levels = c("Totals", "Alone", "Multirace", "Other"))) |> 
+      # mutate(facet = factor(facet, levels = facet_levels)) |> 
       mutate(RACE = factor(RACE, levels = unique(.data[['RACE']])))
-
+    
+    if(indicator == "median-income") {
+      df_long <- df_long |> 
+        mutate(facet = case_when(facet == "Totals" ~ "Region",
+                                 .default = facet))
+    }
+    
+    df_long <- df_long |> 
+      mutate(facet = factor(facet, levels = facet_levels)) 
+    
     all_tables[[t]] <- df_long
     
     plot_name <- str_replace_all(vars[vars_options], "-", " ") |> 
@@ -118,7 +133,7 @@ create_plots <- function(indicator, vars_options = c(1, 2, 3), ind_value = c("sh
     
     sub <- str_squish(paste0(subtitle_name, plot_name))
     # all_plots[[t]] <- create_facet_chart(df = df_long, title = ind, subtitle = sub, x_val = "RACE")
-    all_plots[[t]] <- create_facet_bar_chart(df = df_long, title = ind, subtitle = sub, x_val = "order") #Test bar
+    all_plots[[t]] <- create_facet_bar_chart(df = df_long, title = ind, subtitle = sub, x_val = "order")
   }
   
  return(list(tables = all_tables, plots = all_plots))
