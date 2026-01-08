@@ -11,8 +11,10 @@ library(scales)
 library(showtext)
 library(psrcplot)
 library(here)
+library(readxl)
 
-source(here::here('visuals/function-plot.R'))
+source(here::here('visuals/function-facets.R'))
+# source(here::here('visuals/function-plot.R'))
 
 create_plots <- function(indicator, vars_options = c(1, 2, 3), ind_value = c("share", "count", "median")) {
   
@@ -24,7 +26,7 @@ create_plots <- function(indicator, vars_options = c(1, 2, 3), ind_value = c("sh
   vars <- c("-by-re.xlsx", "-by-re-hhsize.xlsx", "-by-re-hhsize-tenure.xlsx")
   
   e <- data.frame(first = c("detail", "dichot"), second = c("mp", "sp"), third = c("own", "rent"))
-  
+
   df_e <- expand.grid(e) |> 
     mutate(vo2 = paste(first, second, sep = "_")) |> 
     mutate(vo3 = paste(first, second, third, sep = "_"))
@@ -41,46 +43,78 @@ create_plots <- function(indicator, vars_options = c(1, 2, 3), ind_value = c("sh
   } else if(vars_options == 3) {
     tab_names <- unique(df_e$vo3)
   }
-  
+
+  label_lu <- read_excel("T:\\60day-TEMP\\christy\\explore-race\\label-lookup.xlsx", sheet = 1)
+
   for(t in tab_names) {
-    df <- read.xlsx(here::here("visuals", datafile), sheet = t)
+    # where to place Harvard and PSRC totals?
+    # include single_mp?
+    
+    if(str_ends(t, "_sp") | str_ends(t, "_sp_.*")) { #detail_sp, dichot_sp, and single_sp
+      cols <- c("all_sp", "all_sp_cat")
+    } else if (vars_options == 3 & !str_ends(t, "_sp")){
+      w <- str_extract(t, ".*(?=_(own|rent))") # remove _own or _rent
+      cols <- c(w, paste0(w, "_cat"))
+    } else {
+      cols <- c(t, paste0(t, "_cat"))
+    }
+    
+    llu <- label_lu |> 
+      select(all_of(cols)) |> 
+      rename(all_of(setNames(cols, c("order", "facet"))))
+    
+    df <- read_excel(here::here("visuals", datafile), sheet = t)
     
     r <- df |> 
       filter(COUNTY == "Region") |> 
-      select(RACE, ends_with(c("share", "count"))) 
-    
-    r <- df |> 
-      filter(COUNTY == "Region") |> 
-      select(RACE, ends_with(ind_value), ends_with(paste0(ind_value, "_moe"))) 
-    
-    races_ord <- r$RACE
+      mutate(order = paste(RACE, ID)) |> 
+      left_join(llu, by = "order") |> 
+      select(order, facet, ID, RACE, ends_with(ind_value), ends_with(paste0(ind_value, "_moe"))) 
+
+    if(indicator == "median-income") {
+      facet_levels <- c("Region", "Alone", "Multirace", "Other")
+    } else {
+      facet_levels <- c("Totals", "Alone", "Multirace", "Other")
+    }
     
     df_long <- r |>
-      pivot_longer(cols = -RACE,
+      pivot_longer(cols = setdiff(colnames(r),c("ID", "RACE", "order", "facet")),
                    names_to = "variable",
                    values_to = "value"
-      ) |>
+      ) |> 
       mutate(
         # Create median/moe indicator
         type = if_else(str_detect(variable, "_moe$"), "moe", ind_value),
-
+        
         # Clean variable to just the description
         description = str_remove(variable, "_moe$"),
         description = str_trim(str_replace(description, paste0("_", ind_value), "")),
         description = str_replace(description, "_?HINCP_?", "")
       ) |>
-      select(RACE, description, type, value) |>
+      select(order, facet, ID, RACE, description, type, value) |>
       pivot_wider(names_from = type,
                   values_from = value
       ) |>
       mutate(upper = !!sym(ind_value) + moe,
              lower = !!sym(ind_value) - moe) |>
       mutate(description = factor(description, levels = c("PRACE", "ARACE", "HRACE")),
-             RACE = factor(RACE, levels = races_ord)) |>
-      arrange(RACE, description)
+             order = factor(order, levels = llu$order)
+             ) |>
+      arrange(order, description) |> 
+      # mutate(facet = factor(facet, levels = facet_levels)) |> 
+      mutate(RACE = factor(RACE, levels = unique(.data[['RACE']])))
+    
+    if(indicator == "median-income") {
+      df_long <- df_long |> 
+        mutate(facet = case_when(facet == "Totals" ~ "Region",
+                                 .default = facet))
+    }
+    
+    df_long <- df_long |> 
+      mutate(facet = factor(facet, levels = facet_levels)) 
     
     all_tables[[t]] <- df_long
-
+    
     plot_name <- str_replace_all(vars[vars_options], "-", " ") |> 
       str_replace_all(".xlsx", "") |> 
       str_replace_all("\\sre", " Race and Ethnicity") |> 
@@ -98,7 +132,8 @@ create_plots <- function(indicator, vars_options = c(1, 2, 3), ind_value = c("sh
       str_to_title()
     
     sub <- str_squish(paste0(subtitle_name, plot_name))
-    all_plots[[t]] <- create_bar_chart(df = df_long, title = ind, subtitle = sub)
+    # all_plots[[t]] <- create_facet_chart(df = df_long, title = ind, subtitle = sub, x_val = "RACE")
+    all_plots[[t]] <- create_facet_bar_chart(df = df_long, title = ind, subtitle = sub, x_val = "order")
   }
   
  return(list(tables = all_tables, plots = all_plots))
@@ -106,5 +141,11 @@ create_plots <- function(indicator, vars_options = c(1, 2, 3), ind_value = c("sh
 
 
 # test <- create_plots("household-count", 1, "count")
+# test <- create_plots("renter-cost-burden", 1, "count")
 # test2 <- create_plots("household-count", 2, "share")
+# test1 <- create_plots("median-income", 1, "median")
+# test2 <- create_plots("median-income", 2, "median")
 # test3 <- create_plots("median-income", 3, "median")
+# hhs_re <- create_plots("household-count", 2, "count")
+# hhs_re_s <- create_plots("household-count", 1, "share")
+# hhs_re_hhsize_s <- create_plots("household-count", 2, "share")

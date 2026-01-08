@@ -6,7 +6,7 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE, fig.width = 19, fig.height = 7)
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE, fig.width = 19, fig.height = 9)
 
 source(here::here("visuals/create-plots.R"))
 ```
@@ -21,9 +21,9 @@ source(here::here("visuals/create-plots.R"))
 
 ```{r median income}
 
-hhc_re <- create_plots("median-income", 1, "median")
+mi_re <- create_plots("median-income", 1, "median")
 
-iwalk(hhc_re$plots, ~print(.x))
+iwalk(mi_re$plots, ~print(.x))
 
 ```
 
@@ -31,9 +31,9 @@ iwalk(hhc_re$plots, ~print(.x))
 
 ```{r hh size}
 
-hhc_re_hhsize <- create_plots("median-income", 2, "median")
+mi_re_hhsize <- create_plots("median-income", 2, "median")
 
-iwalk(hhc_re_hhsize$plots, ~print(.x))
+iwalk(mi_re_hhsize$plots, ~print(.x))
 
 ```
 
@@ -41,8 +41,8 @@ iwalk(hhc_re_hhsize$plots, ~print(.x))
 
 ```{r hh tenure}
 
-hhs_re_tenure <- create_plots("median-income", 3, "median")
+mi_re_tenure <- create_plots("median-income", 3, "median")
 
-iwalk(hhs_re_tenure$plots, ~print(.x))
+iwalk(mi_re_tenure$plots, ~print(.x))
 
 ```
