@@ -5,3 +5,7 @@
 median-income/*.xlsx
 median-income/data/*.rds
 median-income/data/*.xlsx
+median-income/med-*
+visuals/scratch*
+visuals/*.jpg
+visuals/*.html
