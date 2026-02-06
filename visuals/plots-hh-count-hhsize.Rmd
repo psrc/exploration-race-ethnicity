@@ -1,5 +1,5 @@
 ---
-title: "Race & Ethnicity"
+title: "Race & Ethnicity: Household Counts"
 output: 
   html_document:
     css: style.css
@@ -11,19 +11,17 @@ knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE, fig.width 
 source(here::here("visuals/create-plots.R"))
 ```
 
-# {.tabset} 
+# {.tabset}
 
-## Household Counts
+## Region {.tabset}
 
-### {.tabset}
-
-#### Count
+### Count
 
 ```{r hhcount count}
 
-hhc_re <- create_plots("household-count", 1, "count")
+hhc_re <- create_plots("household-count", 1, "count", "Region")
 
-hhc_re_hhsize <- create_plots("household-count", 2, "count")
+hhc_re_hhsize <- create_plots("household-count", 2, "count", "Region")
 
 iwalk(hhc_re$plots, ~print(.x))
 
@@ -31,13 +29,13 @@ iwalk(hhc_re_hhsize$plots, ~print(.x))
 
 ```
 
-#### Shares
+### Shares
 
 ```{r hhcount share}
 
-hhs_re <- create_plots("household-count", 1, "share")
+hhs_re <- create_plots("household-count", 1, "share", "Region")
 
-hhs_re_hhsize <- create_plots("household-count", 2, "share")
+hhs_re_hhsize <- create_plots("household-count", 2, "share", "Region")
 
 iwalk(hhs_re$plots, ~print(.x))
 
@@ -45,5 +43,34 @@ iwalk(hhs_re_hhsize$plots, ~print(.x))
 
 ```
 
+## King {.tabset}
+
+### Count
+
+```{r hhcount count king}
+
+hhc_re_k <- create_plots("household-count", 1, "count", "King")
+
+hhc_re_hhsize_k <- create_plots("household-count", 2, "count", "King")
+
+iwalk(hhc_re_k$plots, ~print(.x))
+
+iwalk(hhc_re_hhsize_k$plots, ~print(.x))
+
+```
+
+### Shares
+
+```{r hhcount share king}
+
+hhs_re_k <- create_plots("household-count", 1, "share", "King")
+
+hhs_re_hhsize_k <- create_plots("household-count", 2, "share", "King")
+
+iwalk(hhs_re_k$plots, ~print(.x))
+
+iwalk(hhs_re_hhsize_k$plots, ~print(.x))
+
+```
 
 

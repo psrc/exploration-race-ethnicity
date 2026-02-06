@@ -16,7 +16,8 @@ library(readxl)
 source(here::here('visuals/function-facets.R'))
 # source(here::here('visuals/function-plot.R'))
 
-create_plots <- function(indicator, vars_options = c(1, 2, 3), ind_value = c("share", "count", "median")) {
+create_plots <- function(indicator, vars_options = c(1, 2, 3), ind_value = c("share", "count", "median"), 
+                         juris = c("Region", "King", "Kitsap", "Pierce", "Snohomish")) {
   
   if(indicator == "median-income" & ind_value != "median") {
     message("The indicator output value for 'median-income' must be 'median'")
@@ -66,19 +67,19 @@ create_plots <- function(indicator, vars_options = c(1, 2, 3), ind_value = c("sh
     df <- read_excel(here::here("visuals", datafile), sheet = t)
     
     r <- df |> 
-      filter(COUNTY == "Region") |> 
+      filter(COUNTY == juris) |> 
       mutate(order = paste(RACE, ID)) |> 
       left_join(llu, by = "order") |> 
-      select(order, facet, ID, RACE, ends_with(ind_value), ends_with(paste0(ind_value, "_moe"))) 
-
-    if(indicator == "median-income") {
-      facet_levels <- c("Region", "Alone", "Multirace", "Other")
-    } else {
-      facet_levels <- c("Totals", "Alone", "Multirace", "Other")
-    }
+      select(COUNTY, order, facet, ID, RACE, ends_with(ind_value), ends_with(paste0(ind_value, "_moe"))) 
     
+    if(indicator == "median-income") {
+      facet_levels <- c(juris, "Alone", "Multirace", "Other") ### Edited from "Region"?
+    } else {
+      facet_levels <- c("Totals", "Alone", "Multirace", "Other") 
+    }
+
     df_long <- r |>
-      pivot_longer(cols = setdiff(colnames(r),c("ID", "RACE", "order", "facet")),
+      pivot_longer(cols = setdiff(colnames(r),c("COUNTY", "ID", "RACE", "order", "facet")),
                    names_to = "variable",
                    values_to = "value"
       ) |> 
@@ -91,7 +92,7 @@ create_plots <- function(indicator, vars_options = c(1, 2, 3), ind_value = c("sh
         description = str_trim(str_replace(description, paste0("_", ind_value), "")),
         description = str_replace(description, "_?HINCP_?", "")
       ) |>
-      select(order, facet, ID, RACE, description, type, value) |>
+      select(COUNTY, order, facet, ID, RACE, description, type, value) |>
       pivot_wider(names_from = type,
                   values_from = value
       ) |>
@@ -104,10 +105,25 @@ create_plots <- function(indicator, vars_options = c(1, 2, 3), ind_value = c("sh
       # mutate(facet = factor(facet, levels = facet_levels)) |> 
       mutate(RACE = factor(RACE, levels = unique(.data[['RACE']])))
     
+    # replace 'Region' with juris expression
+    if(juris != "Region") {
+      # browser()
+      df_long <- df_long |>
+        mutate(across(c(order, RACE), ~ str_replace_all(.x, "Region", juris))) 
+      
+      order_vec <- unique(df_long$order)
+      df_long <- df_long |> 
+        mutate(order = factor(order, levels = order_vec)) |>
+        arrange(order, description)
+    }
+  
+
     if(indicator == "median-income") {
       df_long <- df_long |> 
-        mutate(facet = case_when(facet == "Totals" ~ "Region",
+        mutate(facet = case_when(facet == "Totals" ~ juris,
                                  .default = facet))
+        # mutate(facet = case_when(facet == "Totals" ~ "Region",
+        #                          .default = facet))
     }
     
     df_long <- df_long |> 
@@ -130,7 +146,7 @@ create_plots <- function(indicator, vars_options = c(1, 2, 3), ind_value = c("sh
     
     ind <- str_replace_all(indicator, "-", " ") |> 
       str_to_title()
-    
+
     sub <- str_squish(paste0(subtitle_name, plot_name))
     # all_plots[[t]] <- create_facet_chart(df = df_long, title = ind, subtitle = sub, x_val = "RACE")
     all_plots[[t]] <- create_facet_bar_chart(df = df_long, title = ind, subtitle = sub, x_val = "order")
@@ -140,7 +156,8 @@ create_plots <- function(indicator, vars_options = c(1, 2, 3), ind_value = c("sh
 }
 
 
-# test <- create_plots("household-count", 1, "count")
+test <- create_plots("household-count", 1, "count", "King")
+# test <- create_plots("household-count", 1, "count", "Region")
 # test <- create_plots("renter-cost-burden", 1, "count")
 # test2 <- create_plots("household-count", 2, "share")
 # test1 <- create_plots("median-income", 1, "median")
