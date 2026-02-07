@@ -73,4 +73,92 @@ iwalk(hhs_re_hhsize_k$plots, ~print(.x))
 
 ```
 
+## Kitsap {.tabset}
 
+### Count
+
+```{r hhcount count kitsap}
+
+hhc_re_kit <- create_plots("household-count", 1, "count", "Kitsap")
+
+hhc_re_hhsize_kit <- create_plots("household-count", 2, "count", "Kitsap")
+
+iwalk(hhc_re_kit$plots, ~print(.x))
+
+iwalk(hhc_re_hhsize_kit$plots, ~print(.x))
+
+```
+
+### Shares
+
+```{r hhcount share kitsap}
+
+hhs_re_kit <- create_plots("household-count", 1, "share", "Kitsap")
+
+hhs_re_hhsize_kit <- create_plots("household-count", 2, "share", "Kitsap")
+
+iwalk(hhs_re_kit$plots, ~print(.x))
+
+iwalk(hhs_re_hhsize_kit$plots, ~print(.x))
+
+```
+
+## Pierce {.tabset}
+
+### Count
+
+```{r hhcount count pierce}
+
+hhc_re_p <- create_plots("household-count", 1, "count", "Pierce")
+
+hhc_re_hhsize_p <- create_plots("household-count", 2, "count", "Pierce")
+
+iwalk(hhc_re_p$plots, ~print(.x))
+
+iwalk(hhc_re_hhsize_p$plots, ~print(.x))
+
+```
+
+### Shares
+
+```{r hhcount share pierce}
+
+hhs_re_p <- create_plots("household-count", 1, "share", "Pierce")
+
+hhs_re_hhsize_p <- create_plots("household-count", 2, "share", "Pierce")
+
+iwalk(hhs_re_p$plots, ~print(.x))
+
+iwalk(hhs_re_hhsize_p$plots, ~print(.x))
+
+```
+
+## Snohomish {.tabset}
+
+### Count
+
+```{r hhcount count snohomish}
+
+hhc_re_k <- create_plots("household-count", 1, "count", "Snohomish")
+
+hhc_re_hhsize_k <- create_plots("household-count", 2, "count", "Snohomish")
+
+iwalk(hhc_re_k$plots, ~print(.x))
+
+iwalk(hhc_re_hhsize_k$plots, ~print(.x))
+
+```
+
+### Shares
+
+```{r hhcount share snohomish}
+
+hhs_re_s <- create_plots("household-count", 1, "share", "Snohomish")
+
+hhs_re_hhsize_s <- create_plots("household-count", 2, "share", "Snohomish")
+
+iwalk(hhs_re_s$plots, ~print(.x))
+
+iwalk(hhs_re_hhsize_s$plots, ~print(.x))
+
+```

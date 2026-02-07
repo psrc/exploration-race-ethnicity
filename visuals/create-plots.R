@@ -14,7 +14,6 @@ library(here)
 library(readxl)
 
 source(here::here('visuals/function-facets.R'))
-# source(here::here('visuals/function-plot.R'))
 
 create_plots <- function(indicator, vars_options = c(1, 2, 3), ind_value = c("share", "count", "median"), 
                          juris = c("Region", "King", "Kitsap", "Pierce", "Snohomish")) {
@@ -107,7 +106,6 @@ create_plots <- function(indicator, vars_options = c(1, 2, 3), ind_value = c("sh
     
     # replace 'Region' with juris expression
     if(juris != "Region") {
-      # browser()
       df_long <- df_long |>
         mutate(across(c(order, RACE), ~ str_replace_all(.x, "Region", juris))) 
       
@@ -148,7 +146,6 @@ create_plots <- function(indicator, vars_options = c(1, 2, 3), ind_value = c("sh
       str_to_title()
 
     sub <- str_squish(paste0(subtitle_name, plot_name))
-    # all_plots[[t]] <- create_facet_chart(df = df_long, title = ind, subtitle = sub, x_val = "RACE")
     all_plots[[t]] <- create_facet_bar_chart(df = df_long, title = ind, subtitle = sub, x_val = "order")
   }
   
@@ -156,7 +153,7 @@ create_plots <- function(indicator, vars_options = c(1, 2, 3), ind_value = c("sh
 }
 
 
-test <- create_plots("household-count", 1, "count", "King")
+# test <- create_plots("household-count", 1, "count", "King")
 # test <- create_plots("household-count", 1, "count", "Region")
 # test <- create_plots("renter-cost-burden", 1, "count")
 # test2 <- create_plots("household-count", 2, "share")
