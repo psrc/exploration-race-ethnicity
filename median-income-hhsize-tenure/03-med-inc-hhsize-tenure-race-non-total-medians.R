@@ -53,7 +53,7 @@ for(ttype in table_types) {
                                   incl_na = FALSE,
                                   rr = TRUE)|> 
       filter(COUNTY != "Region", 
-             OWN_RENT == "Owned" & hhsz_binary != "Total")
+             OWN_RENT != "Total" & hhsz_binary != "Total")
     
     # rename var to generic colnames to assemble and add new column to identify type of raw table
     rs <- bind_rows(med_reg, med_cnty) |>
