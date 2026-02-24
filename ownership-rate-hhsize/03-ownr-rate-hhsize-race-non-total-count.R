@@ -39,10 +39,6 @@ for(ttype in table_types) {
                hhsz_binary == "multi-person") # need to filter because added 'Total' rows with added variable
     
     # add nulls for missing county/race values
-    # 
-    # group_levels <- c("A", "B")       # could come from a master list
-    # year_levels  <- c(2020, 2021)     # could come from a master list
-    
     completed_count_cnty <- count_cnty %>%
       complete(COUNTY = c("King", "Kitsap", "Pierce", "Snohomish"), #can't use unique() b/c "Region" and "Total"
                !!sym(var) := c("American Indian or Alaskan Native", 
@@ -56,20 +52,6 @@ for(ttype in table_types) {
                hhsz_binary = unique(count_cnty$hhsz_binary),
                DATA_YEAR = unique(count_cnty$DATA_YEAR),
                OWN_RENT = "Owned") #can't use unique() b/c "Owned", "Rented", "Else", "Total"
-    
-    # completed_count_cnty <- count_cnty %>%
-    #   complete(COUNTY = c("King", "Kitsap", "Pierce", "Snohomish"), #can't use unique() b/c "Region" and "Total"
-    #            PRACE = c("American Indian or Alaskan Native", 
-    #                       "Asian",
-    #                       "Black or African American",
-    #                       "Hispanic or Latino",
-    #                       "Native Hawaiian or Pacific Islander",
-    #                       "Some Other Race",
-    #                       "Two or More Races",
-    #                       "White"), #can't use unique() b/c "Total"
-    #            hhsz_binary = unique(count_cnty$hhsz_binary),
-    #            DATA_YEAR = unique(count_cnty$DATA_YEAR),
-    #            OWN_RENT = "Owned") #can't use unique() b/c "Owned", "Rented", "Else", "Total"
     
     # extract from tables below where: XRace == "Total"
     count_reg2 <- psrc_pums_count(dl,
