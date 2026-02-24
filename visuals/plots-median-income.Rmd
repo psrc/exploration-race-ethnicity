@@ -1,5 +1,5 @@
 ---
-title: "Race & Ethnicity"
+title: "Race & Ethnicity: Median Income"
 output: 
   html_document:
     css: style.css
@@ -11,38 +11,164 @@ knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE, fig.width 
 source(here::here("visuals/create-plots.R"))
 ```
 
-# {.tabset} 
+# {.tabset}
 
-## Median Income
+## Region {.tabset} 
 
-### {.tabset}
-
-#### Median
+### Median
 
 ```{r median income}
 
-mi_re <- create_plots("median-income", 1, "median")
+mi_re <- create_plots("median-income", 1, "median", "Region")
 
 iwalk(mi_re$plots, ~print(.x))
 
 ```
 
-#### Median by Household Size
+### Median by Household Size
 
 ```{r hh size}
 
-mi_re_hhsize <- create_plots("median-income", 2, "median")
+mi_re_hhsize <- create_plots("median-income", 2, "median", "Region")
 
 iwalk(mi_re_hhsize$plots, ~print(.x))
 
 ```
 
-#### Median by Tenure
+### Median by Tenure
 
 ```{r hh tenure}
 
-mi_re_tenure <- create_plots("median-income", 3, "median")
+mi_re_tenure <- create_plots("median-income", 3, "median", "Region")
 
 iwalk(mi_re_tenure$plots, ~print(.x))
+
+```
+
+## King {.tabset} 
+
+### Median
+
+```{r median income king}
+
+mi_re_k <- create_plots("median-income", 1, "median", "King")
+
+iwalk(mi_re_k$plots, ~print(.x))
+
+```
+
+### Median by Household Size
+
+```{r hh size king}
+
+mi_re_hhsize_k <- create_plots("median-income", 2, "median", "King")
+
+iwalk(mi_re_hhsize_k$plots, ~print(.x))
+
+```
+
+### Median by Tenure
+
+```{r hh tenure king}
+
+mi_re_tenure_k <- create_plots("median-income", 3, "median", "King")
+
+iwalk(mi_re_tenure_k$plots, ~print(.x))
+
+```
+
+## Kitsap {.tabset} 
+
+### Median
+
+```{r median income kitsap}
+
+mi_re_kit <- create_plots("median-income", 1, "median", "Kitsap")
+
+iwalk(mi_re_kit$plots, ~print(.x))
+
+```
+
+### Median by Household Size
+
+```{r hh size kitsap}
+
+mi_re_hhsize_kit <- create_plots("median-income", 2, "median", "Kitsap")
+
+iwalk(mi_re_hhsize_kit$plots, ~print(.x))
+
+```
+
+### Median by Tenure
+
+```{r hh tenure kitsap}
+
+mi_re_tenure_kit <- create_plots("median-income", 3, "median", "Kitsap")
+
+iwalk(mi_re_tenure_kit$plots, ~print(.x))
+
+```
+
+## Pierce {.tabset} 
+
+### Median
+
+```{r median income pierce}
+
+mi_re_p <- create_plots("median-income", 1, "median", "Pierce")
+
+iwalk(mi_re_p$plots, ~print(.x))
+
+```
+
+### Median by Household Size
+
+```{r hh size pierce}
+
+mi_re_hhsize_p <- create_plots("median-income", 2, "median", "Pierce")
+
+iwalk(mi_re_hhsize_p$plots, ~print(.x))
+
+```
+
+### Median by Tenure
+
+```{r hh tenure pierce}
+
+mi_re_tenure_p <- create_plots("median-income", 3, "median", "Pierce")
+
+iwalk(mi_re_tenure_p$plots, ~print(.x))
+
+```
+
+## Snohomish {.tabset} 
+
+### Median
+
+```{r median income snohomish}
+
+mi_re_s <- create_plots("median-income", 1, "median", "Snohomish")
+
+iwalk(mi_re_s$plots, ~print(.x))
+
+```
+
+### Median by Household Size
+
+```{r hh size snohomish}
+
+mi_re_hhsize_s <- create_plots("median-income", 2, "median", "Snohomish")
+
+iwalk(mi_re_hhsize_s$plots, ~print(.x))
+
+```
+
+### Median by Tenure
+
+```{r hh tenure snohomish}
+
+mi_re_tenure_s <- create_plots("median-income", 3, "median", "Snohomish")
+
+iwalk(mi_re_tenure_s$plots, ~print(.x))
 
 ```

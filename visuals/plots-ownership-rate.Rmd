@@ -1,5 +1,5 @@
 ---
-title: "Race & Ethnicity"
+title: "Race & Ethnicity: Ownership Rate"
 output: 
   html_document:
     css: style.css
@@ -11,19 +11,18 @@ knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE, fig.width 
 source(here::here("visuals/create-plots.R"))
 ```
 
-# {.tabset} 
+# Ownership Rate {.tabset} 
 
-## Ownership Rate
 
-### {.tabset}
+## Region {.tabset}
 
-#### Count
+### Count
 
 ```{r ownershiprate count}
 
-orc_re <- create_plots("ownership-rate", 1, "count")
+orc_re <- create_plots("ownership-rate", 1, "count", "Region")
 
-orc_re_hhsize <- create_plots("ownership-rate", 2, "count")
+orc_re_hhsize <- create_plots("ownership-rate", 2, "count", "Region")
 
 iwalk(orc_re$plots, ~print(.x))
 
@@ -31,13 +30,13 @@ iwalk(orc_re_hhsize$plots, ~print(.x))
 
 ```
 
-#### Shares
+### Shares
 
 ```{r ownershiprate share}
 
-ors_re <- create_plots("ownership-rate", 1, "share")
+ors_re <- create_plots("ownership-rate", 1, "share", "Region")
 
-ors_re_hhsize <- create_plots("ownership-rate", 2, "share")
+ors_re_hhsize <- create_plots("ownership-rate", 2, "share", "Region")
 
 iwalk(ors_re$plots, ~print(.x))
 
@@ -45,5 +44,122 @@ iwalk(ors_re_hhsize$plots, ~print(.x))
 
 ```
 
+## King {.tabset}
 
+### Count
 
+```{r ownershiprate count king}
+
+orc_re_k <- create_plots("ownership-rate", 1, "count", "King")
+
+orc_re_hhsize_k <- create_plots("ownership-rate", 2, "count", "King")
+
+iwalk(orc_re_k$plots, ~print(.x))
+
+iwalk(orc_re_hhsize_k$plots, ~print(.x))
+
+```
+
+### Shares
+
+```{r ownershiprate share king}
+
+ors_re_k <- create_plots("ownership-rate", 1, "share", "King")
+
+ors_re_hhsize_k <- create_plots("ownership-rate", 2, "share", "King")
+
+iwalk(ors_re_k$plots, ~print(.x))
+
+iwalk(ors_re_hhsize_k$plots, ~print(.x))
+
+```
+
+## Kitsap {.tabset}
+
+### Count
+
+```{r ownershiprate count kitsap}
+
+orc_re_kit <- create_plots("ownership-rate", 1, "count", "Kitsap")
+
+orc_re_hhsize_kit <- create_plots("ownership-rate", 2, "count", "Kitsap")
+
+iwalk(orc_re_kit$plots, ~print(.x))
+
+iwalk(orc_re_hhsize_kit$plots, ~print(.x))
+
+```
+
+### Shares
+
+```{r ownershiprate share kitsap}
+
+ors_re_kit <- create_plots("ownership-rate", 1, "share", "Kitsap")
+
+ors_re_hhsize_kit <- create_plots("ownership-rate", 2, "share", "Kitsap")
+
+iwalk(ors_re_kit$plots, ~print(.x))
+
+iwalk(ors_re_hhsize_kit$plots, ~print(.x))
+
+```
+
+## Pierce {.tabset}
+
+### Count
+
+```{r ownershiprate count pierce}
+
+orc_re_p <- create_plots("ownership-rate", 1, "count", "Pierce")
+
+orc_re_hhsize_p <- create_plots("ownership-rate", 2, "count", "Pierce")
+
+iwalk(orc_re_p$plots, ~print(.x))
+
+iwalk(orc_re_hhsize_p$plots, ~print(.x))
+
+```
+
+### Shares
+
+```{r ownershiprate share pierce}
+
+ors_re_p <- create_plots("ownership-rate", 1, "share", "Pierce")
+
+ors_re_hhsize_p <- create_plots("ownership-rate", 2, "share", "Pierce")
+
+iwalk(ors_re_p$plots, ~print(.x))
+
+iwalk(ors_re_hhsize_p$plots, ~print(.x))
+
+```
+
+## Snohomish {.tabset}
+
+### Count
+
+```{r ownershiprate count snohomish}
+
+orc_re_s <- create_plots("ownership-rate", 1, "count", "Snohomish")
+
+orc_re_hhsize_s <- create_plots("ownership-rate", 2, "count", "Snohomish")
+
+iwalk(orc_re_s$plots, ~print(.x))
+
+iwalk(orc_re_hhsize_s$plots, ~print(.x))
+
+```
+
+### Shares
+
+```{r ownershiprate share snohomish}
+
+ors_re_s <- create_plots("ownership-rate", 1, "share", "Snohomish")
+
+ors_re_hhsize_s <- create_plots("ownership-rate", 2, "share", "Snohomish")
+
+iwalk(ors_re_s$plots, ~print(.x))
+
+iwalk(ors_re_hhsize_s$plots, ~print(.x))
+
+```

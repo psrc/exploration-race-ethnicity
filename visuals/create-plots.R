@@ -49,7 +49,7 @@ create_plots <- function(indicator, vars_options = c(1, 2, 3), ind_value = c("sh
   for(t in tab_names) {
     # where to place Harvard and PSRC totals?
     # include single_mp?
-    
+    if(t == "detail_mp") browser()
     if(str_ends(t, "_sp") | str_ends(t, "_sp_.*")) { #detail_sp, dichot_sp, and single_sp
       cols <- c("all_sp", "all_sp_cat")
     } else if (vars_options == 3 & !str_ends(t, "_sp")){
@@ -155,11 +155,11 @@ create_plots <- function(indicator, vars_options = c(1, 2, 3), ind_value = c("sh
 
 # test <- create_plots("household-count", 1, "count", "King")
 # test <- create_plots("household-count", 1, "count", "Region")
-# test <- create_plots("renter-cost-burden", 1, "count")
+test <- create_plots("renter-cost-burden", 2, "count", "Kitsap")
 # test2 <- create_plots("household-count", 2, "share")
-# test1 <- create_plots("median-income", 1, "median")
+# test1 <- create_plots("median-income", 1, "median", "Kitsap")
 # test2 <- create_plots("median-income", 2, "median")
-# test3 <- create_plots("median-income", 3, "median")
+# test3 <- create_plots("median-income", 3, "median", "Kitsap")
 # hhs_re <- create_plots("household-count", 2, "count")
 # hhs_re_s <- create_plots("household-count", 1, "share")
 # hhs_re_hhsize_s <- create_plots("household-count", 2, "share")

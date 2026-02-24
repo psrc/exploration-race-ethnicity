@@ -1,5 +1,5 @@
 ---
-title: "Race & Ethnicity"
+title: "Race & Ethnicity: Renter Cost Burden"
 output: 
   html_document:
     css: style.css
@@ -13,17 +13,15 @@ source(here::here("visuals/create-plots.R"))
 
 # {.tabset} 
 
-## Renter Cost Burden
+## Region {.tabset}
 
-### {.tabset}
-
-#### Count
+### Count
 
 ```{r rcostburden count}
 
-rcbc_re <- create_plots("renter-cost-burden", 1, "count")
+rcbc_re <- create_plots("renter-cost-burden", 1, "count", "Region")
 
-rcbc_re_hhsize <- create_plots("renter-cost-burden", 2, "count")
+rcbc_re_hhsize <- create_plots("renter-cost-burden", 2, "count", "Region")
 
 iwalk(rcbc_re$plots, ~print(.x))
 
@@ -31,13 +29,13 @@ iwalk(rcbc_re_hhsize$plots, ~print(.x))
 
 ```
 
-#### Shares
+### Shares
 
 ```{r rcostburden share}
 
-rcbs_re <- create_plots("renter-cost-burden", 1, "share")
+rcbs_re <- create_plots("renter-cost-burden", 1, "share", "Region")
 
-rcbs_re_hhsize <- create_plots("renter-cost-burden", 2, "share")
+rcbs_re_hhsize <- create_plots("renter-cost-burden", 2, "share", "Region")
 
 iwalk(rcbs_re$plots, ~print(.x))
 
@@ -45,5 +43,122 @@ iwalk(rcbs_re_hhsize$plots, ~print(.x))
 
 ```
 
+## King {.tabset}
 
+### Count
 
+```{r rcostburden count king}
+
+rcbc_re_k <- create_plots("renter-cost-burden", 1, "count", "King")
+
+rcbc_re_hhsize_k <- create_plots("renter-cost-burden", 2, "count", "King")
+
+iwalk(rcbc_re_k$plots, ~print(.x))
+
+iwalk(rcbc_re_hhsize_k$plots, ~print(.x))
+
+```
+
+### Shares
+
+```{r rcostburden share king}
+
+rcbs_re_k <- create_plots("renter-cost-burden", 1, "share", "King")
+
+rcbs_re_hhsize_k <- create_plots("renter-cost-burden", 2, "share", "King")
+
+iwalk(rcbs_re_k$plots, ~print(.x))
+
+iwalk(rcbs_re_hhsize_k$plots, ~print(.x))
+
+```
+
+## Kitsap {.tabset}
+
+### Count
+
+```{r rcostburden count kitsap}
+
+rcbc_re_kit <- create_plots("renter-cost-burden", 1, "count", "Kitsap")
+
+rcbc_re_hhsize_kit <- create_plots("renter-cost-burden", 2, "count", "Kitsap")
+
+iwalk(rcbc_re_kit$plots, ~print(.x))
+
+iwalk(rcbc_re_hhsize_kit$plots, ~print(.x))
+
+```
+
+### Shares
+
+```{r rcostburden share kitsap}
+
+rcbs_re_kit <- create_plots("renter-cost-burden", 1, "share", "Kitsap")
+
+rcbs_re_hhsize_kit <- create_plots("renter-cost-burden", 2, "share", "Kitsap")
+
+iwalk(rcbs_re_kit$plots, ~print(.x))
+
+iwalk(rcbs_re_hhsize_kit$plots, ~print(.x))
+
+```
+
+## Pierce {.tabset}
+
+### Count
+
+```{r rcostburden count pierce}
+
+rcbc_re_p <- create_plots("renter-cost-burden", 1, "count", "Pierce")
+
+rcbc_re_hhsize_p <- create_plots("renter-cost-burden", 2, "count", "Pierce")
+
+iwalk(rcbc_re_p$plots, ~print(.x))
+
+iwalk(rcbc_re_hhsize_p$plots, ~print(.x))
+
+```
+
+### Shares
+
+```{r rcostburden share pierce}
+
+rcbs_re_p <- create_plots("renter-cost-burden", 1, "share", "Pierce")
+
+rcbs_re_hhsize_p <- create_plots("renter-cost-burden", 2, "share", "Pierce")
+
+iwalk(rcbs_re_p$plots, ~print(.x))
+
+iwalk(rcbs_re_hhsize_p$plots, ~print(.x))
+
+```
+
+## Snohomish {.tabset}
+
+### Count
+
+```{r rcostburden count snohomish}
+
+rcbc_re_s <- create_plots("renter-cost-burden", 1, "count", "Snohomish")
+
+rcbc_re_hhsize_s <- create_plots("renter-cost-burden", 2, "count", "Snohomish")
+
+iwalk(rcbc_re_s$plots, ~print(.x))
+
+iwalk(rcbc_re_hhsize_s$plots, ~print(.x))
+
+```
+
+### Shares
+
+```{r rcostburden share snohomish}
+
+rcbs_re_s <- create_plots("renter-cost-burden", 1, "share", "Snohomish")
+
+rcbs_re_hhsize_s <- create_plots("renter-cost-burden", 2, "share", "Snohomish")
+
+iwalk(rcbs_re_s$plots, ~print(.x))
+
+iwalk(rcbs_re_hhsize_s$plots, ~print(.x))
+
+```
