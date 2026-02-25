@@ -40,7 +40,7 @@ for(ttype in table_types) {
                hhsz_binary == "multi-person") # need to filter because added 'Total' rows with added variable
     
     # add nulls for missing county/race values
-    completed_count_cnty <- med_cnty %>%
+    completed_med_cnty <- med_cnty %>%
       complete(COUNTY = c("King", "Kitsap", "Pierce", "Snohomish"), #can't use unique() b/c "Region" and "Total"
                !!sym(var) := c("American Indian or Alaskan Native", 
                                "Asian",
@@ -72,7 +72,7 @@ for(ttype in table_types) {
                hhsz_binary == "multi-person") # need to filter because added 'Total' rows with added variable
     
     # rename var to generic colnames to assemble and add new column to identify type of raw table
-    rs <- bind_rows(med_reg, completed_count_cnty) |>
+    rs <- bind_rows(med_reg, completed_med_cnty) |>
       mutate(race_type = var,
              table_type = ttype) |>
       mutate(COUNTY = factor(COUNTY, levels = c("Region", "King", "Kitsap", "Pierce", "Snohomish"))) |>
