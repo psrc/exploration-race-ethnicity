@@ -36,7 +36,22 @@ for(ttype in table_types) {
                                  rr = TRUE) |> 
       filter(COUNTY != "Region", 
              OWN_RENT != "Total" & hhsz_binary != "Total")
-    
+
+    # add nulls for missing county/race values
+    completed_med_cnty <- med_cnty %>%
+      complete(COUNTY = c("King", "Kitsap", "Pierce", "Snohomish"), #can't use unique() b/c "Region" and "Total"
+               !!sym(var) := c("American Indian or Alaskan Native", 
+                               "Asian",
+                               "Black or African American",
+                               "Hispanic or Latino",
+                               "Native Hawaiian or Pacific Islander",
+                               "Some Other Race",
+                               "Two or More Races",
+                               "White"), #can't use unique() b/c "Total"
+               hhsz_binary = unique(med_cnty$hhsz_binary),
+               DATA_YEAR = unique(med_cnty$DATA_YEAR),
+               OWN_RENT = c("Owned", "Rented")) #can't use unique() b/c "Else" and "Total"
+
     # extract from tables below where: XRace == "Total" 
     med_reg2 <- psrc_pums_median(dl,
                                  stat_var = "HINCP",
@@ -56,7 +71,7 @@ for(ttype in table_types) {
              OWN_RENT != "Total" & hhsz_binary != "Total")
     
     # rename var to generic colnames to assemble and add new column to identify type of raw table
-    rs <- bind_rows(med_reg, med_cnty) |>
+    rs <- bind_rows(med_reg, completed_med_cnty) |>
       mutate(race_type = var,
              table_type = ttype) |>
       mutate(COUNTY = factor(COUNTY, levels = c("Region", "King", "Kitsap", "Pierce", "Snohomish"))) |>
@@ -81,5 +96,4 @@ for(ttype in table_types) {
 
 
 saveRDS(main_df, "median-income-hhsize-tenure/data/non-total-counts-df.rds")
-
-# readRDS("median-income-hhsize-tenure/data/non-total-counts-df.rds")
+# test <- readRDS("median-income-hhsize-tenure/data/non-total-counts-df.rds")
