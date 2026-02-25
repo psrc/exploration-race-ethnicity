@@ -26,31 +26,53 @@ for(ttype in table_types) {
                                 stat_var = "HINCP",
                                 group_vars = c(var,"hhsz_binary"),
                                 incl_na = FALSE,
-                                rr = TRUE) 
+                                rr = TRUE) |>
+      filter(hhsz_binary == "single-person" |
+               hhsz_binary == "multi-person") # need to filter because added 'Total' rows with added variable
     
     med_cnty <- psrc_pums_median(dl,
                                  stat_var = "HINCP",
                                  group_vars = c("COUNTY",var,"hhsz_binary"),
                                  incl_na = FALSE,
                                  rr = TRUE) |> 
-      filter(COUNTY != "Region")
+      filter(COUNTY != "Region") |>
+      filter(hhsz_binary == "single-person" |
+               hhsz_binary == "multi-person") # need to filter because added 'Total' rows with added variable
+    
+    # add nulls for missing county/race values
+    completed_count_cnty <- med_cnty %>%
+      complete(COUNTY = c("King", "Kitsap", "Pierce", "Snohomish"), #can't use unique() b/c "Region" and "Total"
+               !!sym(var) := c("American Indian or Alaskan Native", 
+                               "Asian",
+                               "Black or African American",
+                               "Hispanic or Latino",
+                               "Native Hawaiian or Pacific Islander",
+                               "Some Other Race",
+                               "Two or More Races",
+                               "White"), #can't use unique() b/c "Total"
+               hhsz_binary = unique(med_cnty$hhsz_binary),
+               DATA_YEAR = unique(med_cnty$DATA_YEAR))
     
     # extract from tables below where: XRace == "Total" 
     med_reg2 <- psrc_pums_median(dl,
                                  stat_var = "HINCP",
                                  group_vars = c("hhsz_binary", var),
                                  incl_na = FALSE,
-                                 rr = TRUE) 
+                                 rr = TRUE) |>
+      filter(hhsz_binary == "single-person" |
+               hhsz_binary == "multi-person") # need to filter because added 'Total' rows with added variable
     
     med_cnty2 <- psrc_pums_median(dl,
                                   stat_var = "HINCP",
                                   group_vars = c("COUNTY","hhsz_binary", var),
                                   incl_na = FALSE,
                                   rr = TRUE)|> 
-      filter(COUNTY != "Region")
+      filter(COUNTY != "Region") |>
+      filter(hhsz_binary == "single-person" |
+               hhsz_binary == "multi-person") # need to filter because added 'Total' rows with added variable
     
     # rename var to generic colnames to assemble and add new column to identify type of raw table
-    rs <- bind_rows(med_reg, med_cnty) |>
+    rs <- bind_rows(med_reg, completed_count_cnty) |>
       mutate(race_type = var,
              table_type = ttype) |>
       mutate(COUNTY = factor(COUNTY, levels = c("Region", "King", "Kitsap", "Pierce", "Snohomish"))) |>
@@ -75,5 +97,4 @@ for(ttype in table_types) {
 
 
 saveRDS(main_df, "median-income-hhsize/data/non-total-counts-df.rds")
-
-# readRDS("median-income-hhsize/data/non-total-counts-df.rds")
+# test <- readRDS("median-income-hhsize/data/non-total-counts-df.rds")
