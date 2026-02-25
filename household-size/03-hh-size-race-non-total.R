@@ -25,17 +25,17 @@ for(ttype in table_types) {
     count_reg <- psrc_pums_count(dl, 
                                  group_vars=c("hhsz_binary",var), 
                                  incl_na=FALSE, 
-                                 rr=TRUE) #%>%
-    # filter(hhsz_binary == "single-person" |
-    #          hhsz_binary == "multi-person") # need to filter because added 'Total' rows with added variable
+                                 rr=TRUE) %>%
+    filter(hhsz_binary == "single-person" |
+             hhsz_binary == "multi-person") # need to filter because added 'Total' rows with added variable
     
     count_cnty <- psrc_pums_count(dl, 
                                   group_vars=c("COUNTY","hhsz_binary",var), 
                                   incl_na=FALSE, 
                                   rr=TRUE) %>%
-      filter(COUNTY != "Region") #%>% 
-      # filter(hhsz_binary == "single-person" |
-      #          hhsz_binary == "multi-person") # need to filter because added 'Total' rows with added variable
+      filter(COUNTY != "Region") %>% 
+      filter(hhsz_binary == "single-person" |
+               hhsz_binary == "multi-person") # need to filter because added 'Total' rows with added variable
     
     # add nulls for missing county/race values (just in case)
     completed_count_cnty <- count_cnty %>%
@@ -55,17 +55,21 @@ for(ttype in table_types) {
     count_reg2 <- psrc_pums_count(dl, 
                                   group_vars=c("hhsz_binary",var), 
                                   incl_na=FALSE, 
-                                  rr=TRUE)
+                                  rr=TRUE) |>
+      filter(hhsz_binary == "single-person" |
+               hhsz_binary == "multi-person") # need to filter because added 'Total' rows with added variable
     
     count_cnty2 <- psrc_pums_count(dl, 
                                    group_vars=c("COUNTY",var, "hhsz_binary"), 
                                    incl_na=FALSE, 
                                    rr=TRUE)|> 
-      filter(COUNTY != "Region")
+      filter(COUNTY != "Region") |>
+      filter(hhsz_binary == "single-person" |
+               hhsz_binary == "multi-person") # need to filter because added 'Total' rows with added variable
     
     
     # rename var to generic colnames to assemble and add new column to identify type of raw table
-    rs <- bind_rows(count_reg, count_cnty) |>
+    rs <- bind_rows(count_reg, completed_count_cnty) |>
       mutate(race_type = var,
              table_type = ttype) |>
       mutate(COUNTY = factor(COUNTY, levels = c("Region", "King", "Kitsap", "Pierce", "Snohomish"))) |>
@@ -78,8 +82,8 @@ for(ttype in table_types) {
     #   mutate(COUNTY = factor(COUNTY, levels = c("Region", "King", "Kitsap", "Pierce", "Snohomish"))) |>
     #   rename(race = var) |>
     #   arrange(COUNTY) |>
-    #   filter(race == 'Total' & hhsz_binary != 'Total')
-    
+    #   filter(race == 'Total') #& hhsz_binary != 'Total')
+    # 
     # rs3 <- bind_rows(rs, rs2) |>
     #   arrange(COUNTY, race, hhsz_binary)
     
