@@ -3,12 +3,10 @@ library(tidyverse)
 race_vars <- c("PRACE", "ARACE", "HRACE")
 dyear <- 2023
 
-# Go up three directory levels
-user_dir <- dirname(dirname(dirname(here())))
+# Get user directory
+user_dir <- Sys.getenv("USERPROFILE")
 
 library_loc <- file.path(user_dir, "AppData/Local/R/win-library/4.4")
-# library_loc <- "C:/Users/eclute/AppData/Local/R/win-library/4.4"
-# library_loc <- "C:/Users/mrichards/AppData/Local/R/win-library/4.4"
 dir <- "J:/Projects/Census/AmericanCommunitySurvey/Data/PUMS/pums_rds"
 
 # Retrieve data ----

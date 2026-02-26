@@ -8,11 +8,8 @@ library(purrr)
 library(here)
 
 # Go up three directory levels
-user_dir <- dirname(dirname(dirname(here())))
-
+user_dir <- Sys.getenv("USERPROFILE")
 library_loc <- file.path(user_dir, "AppData/Local/R/win-library/4.4")
-# library_loc <- "C:/Users/mrichards/AppData/Local/R/win-library/4.4"
-# library_loc <- "C:/Users/eclute/AppData/Local/R/win-library/4.4"
 
 paths <- file.path(library_loc, c("psrccensus_mrdetail", "psrccensus_mrdichot"))
 walk(paths, ~dir.create(.x))
@@ -26,4 +23,3 @@ install_github("psrc/psrccensus",
                ref = "multiracial_dichotomy",
                lib = paths[2],
                force = TRUE)
-
