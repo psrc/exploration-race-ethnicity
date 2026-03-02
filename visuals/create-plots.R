@@ -49,7 +49,7 @@ create_plots <- function(indicator, vars_options = c(1, 2, 3), ind_value = c("sh
   for(t in tab_names) {
     # where to place Harvard and PSRC totals?
     # include single_mp?
-    if(t == "detail_mp") browser()
+ 
     if(str_ends(t, "_sp") | str_ends(t, "_sp_.*")) { #detail_sp, dichot_sp, and single_sp
       cols <- c("all_sp", "all_sp_cat")
     } else if (vars_options == 3 & !str_ends(t, "_sp")){
