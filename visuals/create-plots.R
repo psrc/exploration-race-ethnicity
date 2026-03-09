@@ -155,7 +155,9 @@ create_plots <- function(indicator, vars_options = c(1, 2, 3), ind_value = c("sh
 
 # test <- create_plots("household-count", 1, "count", "King")
 # test <- create_plots("household-count", 1, "count", "Region")
-test <- create_plots("renter-cost-burden", 2, "count", "Kitsap")
+# test <- create_plots("ownership-rate", 1, "count", "Pierce")
+# test <- create_plots("renter-cost-burden", 1, "count", "Region")
+# test <- create_plots("renter-cost-burden", 2, "count", "Kitsap")
 # test2 <- create_plots("household-count", 2, "share")
 # test1 <- create_plots("median-income", 1, "median", "Kitsap")
 # test2 <- create_plots("median-income", 2, "median")

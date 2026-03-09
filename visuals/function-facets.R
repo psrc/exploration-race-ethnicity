@@ -27,10 +27,11 @@ create_facet_bar_chart <- function(df, title, subtitle, x_val) {
     cc_lim <- c(0,1)
     plot_scale <- scale_x_continuous(labels = percent, expand = c(0,0))
   } else {
-    max_val <- max(df[[val_colname]])
-    # cc_lim <- c(0, ceiling(max_val) + 10000) #rentercostburden
-    cc_lim <- c(0, ceiling(max_val) + 100000) #hhcount ownershiprate
+    max_val <- max(df[["upper"]][!is.na(df[["upper"]])])
+    cc_lim <- c(0, ceiling(max_val) + (ceiling(max_val)*.25))
     plot_scale <-scale_x_continuous(labels = comma, expand = c(0,0))
+    
+    # max_val_label <- prettyNum(round(max(df[["upper"]][!is.na(df[["upper"]])])), big.mark = ",")
   }
   
   p <- ggplot() +
@@ -41,6 +42,17 @@ create_facet_bar_chart <- function(df, title, subtitle, x_val) {
                    ) +
     plot_scale +
     coord_cartesian(xlim = cc_lim) +
+    geom_vline(xintercept = round(max(df[["upper"]][!is.na(df[["upper"]])])), linetype = "dotted", color = "grey", size = .5) +
+    annotate("text", 
+             x = round(max(df[["upper"]][!is.na(df[["upper"]])])), 
+             y = Inf,
+             label = prettyNum(round(max(df[["upper"]][!is.na(df[["upper"]])])), big.mark = ","), 
+             size = 7,
+             vjust = 2,
+             hjust = 3.5,
+             angle = 90,
+             color = "#737270"
+             ) +
     scale_y_discrete(labels = function(x) str_wrap(name_vec[x], width = 20)) +
     scale_fill_discrete(palette = psrc_colors$pognbgy_5, name = str_to_title(val_colname), 
                         guide = guide_legend(reverse = TRUE)) +
