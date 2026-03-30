@@ -1,0 +1,190 @@
+library(magrittr)
+library(psrccensus)
+library(dplyr)
+library(stringr)
+library(data.table)
+
+# 1. Setup: List necessary direct-PUMS variables & table names ------
+pvars <- c(
+  #"AGEP",                   # Age
+  #"POVPIP",                 # Income-to-poverty ratio
+  #"ENG",                    # Ability to speak English
+  #"ESR",                    # Employment Status
+  "PRACE",                   # Individual race (PSRC categories)
+  #"HINCP",
+  #"TEN",
+  "HHLDRHISP",               # Recoded detailed Hispanic origin of the householder 
+  "HISP",                    # hispanic/latinx
+  "ANC1P",                   # ancestry - 1st entry
+  "ANC2P"                    # ancestry - 2nd entry
+  #"RAC1P",
+  #"RAC2P"
+)
+
+hvars <- c(
+  #"POVPIP",                 # Income-to-poverty ratio
+  #"R65",                    # Presence of persons over 65 years in household
+  #"VEH",                    # Household vehicles
+  "PRACE",                   # Householder race (PSRC categories)
+  #"HINCP",
+  #"TEN",
+  "HISP",                    # Recoded detailed Hispanic origin
+  "HHLDRHISP",
+  "ANC1P",                   #ancestry - 1st entry
+  "ANC2P"                    #ancestry - 2nd entry
+  #"RAC2P",
+  #"RAC1P"
+)
+
+# 2. Setup: Helper functions ----------------------------------------
+# add_shared_vars <- function(df){
+#   df %<>% mutate(
+#     poc = factor(
+#       case_when(PRACE=="White alone" ~ "Non-POC",
+#                 !is.na(PRACE)        ~ "POC"),
+#       levels=c("POC","Non-POC")),
+#     race = forcats::fct_relevel(
+#       factor(
+#         str_replace(
+#           str_replace(as.character(PRACE), "Latino", "Latinx"),
+#           "( or African American)? alone", "")),
+#       c("Some Other Race", "Two or More Races"), after = Inf),
+#   )
+# }
+
+# add_shared_vars <- function(df){
+#   df %<>% mutate(
+#     low_inc = factor(
+#       case_when(is.na(POVPIP)  ~ NA_character_,                                # Low income = 200 pct poverty level
+#                 POVPIP < 200   ~ "Low Income",
+#                 !is.na(POVPIP) ~ "Not Low Income"),
+#       levels=c("Low Income", "Not Low Income"))
+#   )
+# }
+# 
+# add_shared_vars <- function(df){
+#   df %<>% mutate(income_bin=factor(case_when(HINCP < 50000 ~ "Under $50,000",
+#                                      HINCP < 75000 ~ "$50,000-$74,999",
+#                                      HINCP < 100000 ~ "$75,000-$99,999",
+#                                      HINCP < 150000 ~ "$100,000-$149,999",
+#                                      HINCP < 200000 ~ "$150,000-$199,999",
+#                                      HINCP >=200000 ~ "$200,000 or more",
+#                                      !is.na(HINCP) ~ "Else / Prefer not to answer"),
+#                            levels=c("Under $50,000",
+#                                     "$50,000-$74,999",
+#                                     "$75,000-$99,999",
+#                                     "$100,000-$149,999",
+#                                     "$150,000-$199,999",
+#                                     "$200,000 or more",
+#                                     "Else / Prefer not to answer"))
+# )}
+#
+# add_pp_vars <- function(df){
+#   df %<>% mutate(
+#     age5_17  = case_when(between(AGEP,5,17)  ~ "5-17",
+#                          !is.na(AGEP)        ~ "not 5-17"),
+#     over_65  = case_when(AGEP > 64           ~ "65+",
+#                          !is.na(AGEP)        ~ "not 65+"),
+#     age65_84 = case_when(between(AGEP,65,84) ~ "65-84",
+#                          !is.na(AGEP)        ~ "not 65-84"),
+#     over_85  = case_when(AGEP > 84           ~ "85+",
+#                          !is.na(AGEP)        ~ "not 85+"),
+#     lep = factor(                                                              # Low English Proficiency @ individual level
+#       case_when(AGEP < 5                           ~ NA_character_,
+#                 !str_detect(as.character(ENG), "^Very") ~ "Speak English less than 'very well'",
+#                 TRUE                               ~ "Speak English 'very well'")),
+#     employment = factor(
+#       case_when(AGEP < 18                                      ~ NA_character_,
+#                 grepl("^(Civilian|Armed) ", as.character(ESR)) ~ "Employed",
+#                 !is.na(ESR)                                    ~ "Unemployed")))
+# }
+# 
+# add_hh_vars <- function(df){
+#   df %<>% mutate(
+#     h65=factor(
+#       case_when(grepl("^[12] ", as.character(R65))        ~"Person age 65+ in household",
+#                 as.character(R65)=="No person 65 and over" ~"No person age 65+ in household"),
+#       levels=paste(c("Person", "No Person"), "age 65+ in household"))
+#   )
+# }
+
+xtab_var1s <- c(
+  #"race", "low_inc", "income_bin",
+  #"employment","lep", "HINCP", 
+  #"TEN", 
+  "HISP", 
+  "PRACE", 
+  #"RAC1P", "RAC2P" 
+  "HHLDRHISP",
+  "ANC1P",
+  "ANC2P"
+  )
+xtab_var2s <- c(#"age5_17", "over_65", "age65_84", "over_85",
+  #"race",              
+  #"low_inc", "income_bin",
+                #"lep", "HINCP", 
+  #"TEN", 
+  "HISP", "HHLDRHISP",
+  "ANC1P", "ANC2P"
+  )
+
+var_vctr <- function(var){
+  x <- data.frame(setdiff(xtab_var2s, var), var) %>%
+    transpose() %>% c()
+}
+
+reg_pums_count <- purrr::partial(psrc_pums_count, rr=TRUE, incl_na=FALSE)      # set default data object, settings
+
+ctyreg_pums_count <- function(so, groupvars=NULL){                             # Function for county + region counts
+  rs      <- list()
+  rs[[1]] <- reg_pums_count(so, group_vars=groupvars)                          # incl_na=FALSE option for accurate within-subgroup shares
+  rs[[2]] <- reg_pums_count(so, group_vars=c("COUNTY", groupvars)) %>%
+    filter(COUNTY!="Region")                                                   # Remove duplicate total level
+  rs %<>% rbindlist() %>% arrange(DATA_YEAR, COUNTY)                           # Combine county & regional results
+  return(rs)
+}
+
+apply_cr_pums_count <- function(var){
+  x <- sapply(var_vctr(var), ctyreg_pums_count, simplify=FALSE, USE.NAMES=TRUE)
+}
+
+# Write all tables to file
+write_cmp_pums_xlsx <- function(result_list){
+  rs <- result_list #%>% unlist(recursive=FALSE, use.names=TRUE)
+  openxlsx::write.xlsx(rs, file = "hisp_anc_outfile_5year.xlsx",
+                       sheetName = names(rs), rowNames = FALSE)
+  return(invisible(NULL))
+}
+
+# 3. Retrieve data & calculate statistics ---------------------------
+dyear <- 2023
+#pums_rds <- "C:/Users/mjensen/projects/Census/AmericanCommunitySurvey/Data/PUMS/pums_rds"
+pums_rds <- "J:/Projects/Census/AmericanCommunitySurvey/Data/PUMS/pums_rds"    # Network PUMS location,
+pp_df <- get_psrc_pums(5, dyear, "p", pvars, dir=pums_rds)                     # retrieve data
+hh_df <- get_psrc_pums(5, dyear, "h", hvars, dir=pums_rds)
+pp_df %<>% 
+  #add_pp_vars() %>% 
+  add_shared_vars()                                 # add recode variables
+hh_df %<>% 
+  #add_hh_vars() %>% 
+  add_shared_vars()
+#cmpstats <- sapply(xtab_var1s, apply_cr_pums_count, simplify=FALSE, USE.NAMES=TRUE) # calculate all combinations
+
+# calculate specified combinations
+cmpstats <- list()
+
+#cmpstats$hispandanc                <- ctyreg_pums_count(pp_df, c("HISP", "ANC1P", "ANC2P"))
+#cmpstats$hispandanc1               <- ctyreg_pums_count(pp_df, c("HISP", "ANC1P"))
+#cmpstats$hisp_ten                  <- ctyreg_pums_count(pp_df, c("HISP", "TEN"))
+#cmpstats$hisp_inc                  <- ctyreg_pums_count(pp_df, c("HISP", "income_bin"))
+# 
+cmpstats$hisp                      <- ctyreg_pums_count(pp_df, c("HISP"))
+cmpstats$hispandancone             <- ctyreg_pums_count(pp_df, c("ANC1P", "HISP"))
+cmpstats$hispandanctwo             <- ctyreg_pums_count(pp_df, c("ANC2P", "HISP"))
+# cmpstats$hisphh                   <- ctyreg_pums_count(hh_df, c("HHLDRHISP"))
+# cmpstats$anconeandhisphh          <- ctyreg_pums_count(hh_df, c("ANC1P", "HHLDRHISP"))
+# cmpstats$anctwoandhisphh          <- ctyreg_pums_count(hh_df, c("ANC2P", "HHLDRHISP"))
+
+#cmpstats$racedetail                <- ctyreg_pums_count(pp_df, c("PRACE", "RAC1P", "RAC2P"))
+
+write_cmp_pums_xlsx(cmpstats)
