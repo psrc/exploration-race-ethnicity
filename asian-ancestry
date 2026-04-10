@@ -1,0 +1,75 @@
+# TITLE: 2023 Asian Ancestry Analysis
+# GEOGRAPHIES: Region
+# DATA SOURCE: ACS Data
+# AUTHOR: Kristin Mitchell
+
+library(psrccensus)
+library(tidycensus)
+library(tidyverse)
+library(dplyr)
+library(openxlsx)
+library(magrittr)
+
+year <- (2023)
+acs_type <- "5"
+
+pums_rds <- "J:/Projects/Census/AmericanCommunitySurvey/Data/PUMS/pums_rds"
+
+# Pull Data 
+pums_data <- get_psrc_pums(acs_type,year,"p",c("PRACE", "RAC2P19", "RAC2P23", "ANC1P", "ANC2P",
+                                               "RAC1P"), dir=pums_rds)
+
+## top Asian subpopulations in region
+# asian_regex <- paste0(
+#   c("Asian Indian", "Cambodian", "Chinese", "Taiwanese", "Filipino",
+#     "Japanese", "Korean", "Laotian", "Pakistani", "Thai", "Vietnamese"),
+#   collapse="|") %>% paste0("(",.,")")     
+# 
+# pums_data %<>% 
+#   mutate(
+#     asian_subgrp = factor(                                                                   # Breaks out ethnicities listed in regex above
+#       case_when(PRACE!="Asian alone" ~ NA_character_,
+#                 PRACE=="Asian alone" &
+#                   grepl(!!asian_regex, gsub(",? alone", "", as.character(RAC2P19))) ~ gsub(",? alone", "", as.character(RAC2P19)),
+#                 PRACE=="Asian alone" &
+#                   grepl(!!asian_regex, gsub(",? alone", "",as.character(RAC2P23))) ~ gsub(",? alone", "", as.character(RAC2P23)),
+#                 PRACE=="Asian alone" &
+#                   (grepl("^All combinations", as.character(RAC2P19)) |
+#                      grepl("^All combinations", as.character(RAC2P23))) ~ "Two or more Asian",
+#                 PRACE=="Asian alone" ~ "Other Asian",
+#                 TRUE ~ NA_character_))
+#   )
+
+# all Asian subpopulations
+asian_regex <- paste0(
+  c("Asian Indian", "Bangladeshi", "Bhutanese", "Burmese", "Cambodian", "Chinese", "Taiwanese", 
+    "Filipino", "Hmong", "Indonesian", "Japanese", "Kazakh", "Korean", "Laotian", "Malaysian", "Mien", 
+    "Mongolian", "Nepalese", "Pakistani", "Sikh", "Sri Lankan", "Thai", "Uzbek", "Vietnamese"),
+  collapse="|") %>% paste0("^(",.,")")    
+
+pums_data %<>% mutate(
+    asian_subgrp = factor(                          # Breaks out ethnicities listed in regex above
+      case_when(PRACE!="Asian" ~ NA_character_,
+                PRACE=="Asian" &
+                  grepl(!!asian_regex, as.character(RAC2P19)) ~ gsub(",? alone", "", as.character(RAC2P19)),
+                PRACE=="Asian" &
+                  grepl(!!asian_regex, as.character(RAC2P23)) ~ gsub(",? alone", "", as.character(RAC2P23)),
+                PRACE=="Asian" &
+                  (grepl("^All combinations", as.character(RAC2P19)) |
+                     grepl("^All combinations", as.character(RAC2P23))) ~ "Two or more Asian",
+                PRACE=="Asian" ~ "Other Asian",
+                TRUE ~ NA_character_))
+  )
+
+# Asian subpopulations 
+
+## Asian pop totals for PRACE and asian_subgrp = 627914
+count <- psrc_pums_count(pums_data, group_vars=c("asian_subgrp")) 
+count_race <- psrc_pums_count(pums_data, group_vars=c("PRACE"))
+
+## Asian pop totals for RAC1P and RAC2P19/RAC2P23 combined = 633152
+count_raconep <- psrc_pums_count(pums_data, group_vars=c("RAC1P")) 
+count_19 <- psrc_pums_count(pums_data, group_vars=c("RAC2P19"))
+count_23 <- psrc_pums_count(pums_data, group_vars=c("RAC2P23")) 
+
+#write.xlsx(count_23, 'asian_detail_2023.xlsx')
